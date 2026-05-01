@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'General Sans', 'Inter', system-ui, sans-serif;
+
+  --color-bg:        #1a1b26;
+  --color-fg:        #ffffff;
+  --color-muted:     #7a7d8e;
+  --color-accent:    #c0caf5;
+}
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body { overflow-x: hidden; }
+
+/* Explicit font-family declarations so @nuxt/fonts CSS scanner picks them up
+   reliably (Tailwind v4 @theme tokens are sometimes missed). */
+.font-display,
+h1, h2, h3, h4 {
+  font-family: 'General Sans', 'Inter', system-ui, sans-serif;
+}
+
+/* Lenis smooth scroll — recommended baseline styles */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Hide native cursor when CustomCursor is active (desktop only) */
+html.cursor-hidden,
+html.cursor-hidden * {
+  cursor: none !important;
+}
+/* …but keep native text caret on form fields so admins can edit comfortably */
+html.cursor-hidden input,
+html.cursor-hidden textarea,
+html.cursor-hidden select,
+html.cursor-hidden [contenteditable] {
+  cursor: text !important;
+}
+html.cursor-hidden select {
+  cursor: pointer !important;
+}
+
+/* Animated underline for nav-style links. Apply via .link-hover class. */
+.link-hover {
+  position: relative;
+  display: inline-block;
+}
+.link-hover::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-hover:hover::after,
+.link-hover.router-link-active::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}

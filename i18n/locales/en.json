@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "work": "Work",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "footer": {
+    "tagline": "Architecture without compromise"
+  },
+  "home": {
+    "seo_title": "AA2U Architecture Studio",
+    "seo_description": "An architecture studio combining precision, method, and creativity.",
+    "studio_name": "AA2U",
+    "intro": "An architecture studio focused on precision design, BIM methodology, and uncompromising creativity.",
+    "scroll_hint": "Scroll to discover",
+    "featured_eyebrow": "Selected Work",
+    "featured_heading": "Projects that shape the way we think."
+  },
+  "work": {
+    "eyebrow": "Work",
+    "heading": "Every project is a question answered with space.",
+    "description": "Selected architecture and design projects by AA2U.",
+    "empty": "No projects published yet."
+  },
+  "project": {
+    "location": "Location",
+    "year": "Year",
+    "type": "Type",
+    "partners": "Partners",
+    "what_we_did": "What we did",
+    "next": "Next project",
+    "view": "View"
+  },
+  "about": {
+    "eyebrow": "About",
+    "heading": "A studio born from questions, built with precision.",
+    "principles_label": "Our principles",
+    "team_label": "Team",
+    "team_heading": "The faces behind AA2U.",
+    "who": {
+      "heading": "Who we are.",
+      "body": "We're architects, engineers, and creatives working as one studio. We don't build for prestige — we build for the people who'll live in it."
+    },
+    "what": {
+      "heading": "What we do every day.",
+      "body": "Consulting, design, development, and construction. All with BIM methodology that keeps details coordinated from day one."
+    }
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "heading": "Got a project? Let's start with a question.",
+    "description": "Contact AA2U to discuss your architecture project.",
+    "studio": "Studio",
+    "phone": "Phone",
+    "socials": "Socials",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "project_type": "Project type",
+      "message": "Message",
+      "send": "Send",
+      "sending": "Sending…",
+      "success": "Thank you — we'll be in touch shortly.",
+      "error": "Something went wrong. Please try again."
+    }
+  }
+}

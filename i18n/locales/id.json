@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "work": "Karya",
+    "about": "Tentang",
+    "contact": "Kontak"
+  },
+  "footer": {
+    "tagline": "Arsitektur tanpa kompromi"
+  },
+  "home": {
+    "seo_title": "AA2U Arsitektur",
+    "seo_description": "Studio arsitektur yang menggabungkan presisi, metode, dan kreativitas.",
+    "studio_name": "AA2U",
+    "intro": "Studio arsitektur yang berfokus pada desain presisi, metodologi BIM, dan kreativitas tanpa batas.",
+    "scroll_hint": "Gulir untuk menjelajah",
+    "featured_eyebrow": "Karya Pilihan",
+    "featured_heading": "Proyek yang membentuk cara kami berpikir."
+  },
+  "work": {
+    "eyebrow": "Karya",
+    "heading": "Setiap proyek adalah pertanyaan yang dijawab dengan ruang.",
+    "description": "Pilihan proyek arsitektur dan perancangan AA2U.",
+    "empty": "Belum ada proyek yang dipublikasikan."
+  },
+  "project": {
+    "location": "Lokasi",
+    "year": "Tahun",
+    "type": "Tipe",
+    "partners": "Kolaborator",
+    "what_we_did": "Yang kami kerjakan",
+    "next": "Proyek berikutnya",
+    "view": "Lihat"
+  },
+  "about": {
+    "eyebrow": "Tentang",
+    "heading": "Studio yang lahir dari pertanyaan, dibangun dengan presisi.",
+    "principles_label": "Prinsip kami",
+    "team_label": "Tim",
+    "team_heading": "Wajah-wajah di balik AA2U.",
+    "who": {
+      "heading": "Siapa kami?",
+      "body": "Kami arsitek, insinyur, dan tim kreatif yang bekerja sebagai satu studio. Kami tidak tertarik membangun untuk gengsi — kami membangun untuk orang yang akan menghuninya."
+    },
+    "what": {
+      "heading": "Yang kami kerjakan setiap hari.",
+      "body": "Konsultasi, perancangan, pengembangan, dan konstruksi. Semua dengan metodologi BIM yang membuat detail terkoordinasi sejak hari pertama."
+    }
+  },
+  "contact": {
+    "eyebrow": "Kontak",
+    "heading": "Punya proyek? Mari kita mulai dari pertanyaan.",
+    "description": "Hubungi AA2U untuk konsultasi proyek arsitektur Anda.",
+    "studio": "Studio",
+    "phone": "Telepon",
+    "socials": "Media Sosial",
+    "form": {
+      "name": "Nama",
+      "email": "Email",
+      "phone": "Telepon",
+      "project_type": "Tipe proyek",
+      "message": "Pesan",
+      "send": "Kirim",
+      "sending": "Mengirim…",
+      "success": "Terima kasih, kami akan segera menghubungi Anda.",
+      "error": "Terjadi kesalahan, silakan coba lagi."
+    }
+  }
+}
