@@ -17,7 +17,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-body { overflow-x: hidden; }
+html, body { overflow-x: clip; }
 
 /* Explicit font-family declarations so @nuxt/fonts CSS scanner picks them up
    reliably (Tailwind v4 @theme tokens are sometimes missed). */
@@ -58,6 +58,63 @@ html.cursor-hidden [contenteditable] {
 }
 html.cursor-hidden select {
   cursor: pointer !important;
+}
+
+/* Intro curtain — global rules. The component itself is SSR-rendered visible;
+   the inline bootstrap on <html> sets .no-intro for returning users so the
+   curtain never paints. .intro-active locks page scroll during play. */
+html.no-intro .intro-curtain { display: none; }
+html.intro-active,
+html.intro-active body { overflow: hidden; }
+
+/* Focus styles — visible keyboard focus everywhere. */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+/* Don't suppress focus rings even when the custom cursor hides the system cursor. */
+html.cursor-hidden *:focus-visible {
+  outline: 2px solid var(--color-fg) !important;
+  outline-offset: 3px !important;
+}
+
+/* Respect OS-level reduced-motion: blanket CSS fallback for anything not
+   already gated in JS. Targets transitions, animations, scroll-behavior. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skeleton loading shimmer */
+.skeleton-line,
+.skeleton-pulse {
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-line::after,
+.skeleton-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.04),
+    transparent
+  );
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* Animated underline for nav-style links. Apply via .link-hover class. */

@@ -29,8 +29,8 @@ function onCardClick() {
   <NuxtLink
     :to="localePath(`/work/${project.slug}`)"
     :data-cursor-label="cursorLabel"
-    class="project-card group block relative"
-    :class="variant === 'showcase' ? 'shrink-0' : 'w-full'"
+    class="project-card group block relative max-w-full"
+    :class="variant === 'showcase' ? 'w-full md:w-auto md:shrink-0' : 'w-full'"
     @click="onCardClick"
   >
     <!-- Showcase: width derived from viewport HEIGHT so the whole card
@@ -38,21 +38,23 @@ function onCardClick() {
          layout since horizontal scroll is disabled there. -->
     <div
       :class="variant === 'showcase'
-        ? 'w-[80vw] md:w-auto'
+        ? 'w-full md:w-auto'
         : 'w-full'"
     >
       <div
+        ref="imgRef"
+        :data-flip-id="flipId"
         class="relative overflow-hidden aspect-[4/3] bg-white/[0.04]"
         :class="variant === 'showcase' ? 'md:h-[60vh] md:w-auto md:aspect-[4/3]' : ''"
       >
-        <img
-          ref="imgRef"
-          :data-flip-id="flipId"
+        <NuxtImg
           :src="project.cover_image"
           :alt="t(project.title)"
-          class="w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+          :sizes="variant === 'showcase' ? '(max-width: 768px) 80vw, 60vw' : '(max-width: 768px) 100vw, 50vw'"
           :loading="variant === 'showcase' ? 'eager' : 'lazy'"
+          format="webp"
           decoding="async"
+          class="w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
         />
         <div v-if="numberLabel" class="absolute top-4 left-4 text-xs tracking-[0.25em] text-white/80 mix-blend-difference">
           {{ numberLabel }}

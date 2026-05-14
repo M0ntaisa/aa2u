@@ -13,6 +13,14 @@ onMounted(() => {
   const { $gsap, $SplitText } = useNuxtApp() as any
   if (!$gsap) return
 
+  // Reduced motion: skip the SplitText reveal — just make everything visible.
+  if (prefersReducedMotion()) {
+    if (headingRef.value)    $gsap.set(headingRef.value,    { autoAlpha: 1 })
+    if (introRef.value)      $gsap.set(introRef.value,      { autoAlpha: 1, y: 0 })
+    if (scrollHintRef.value) $gsap.set(scrollHintRef.value, { autoAlpha: 1 })
+    return
+  }
+
   // Pre-hide everything immediately so SSR text never paints unsplit.
   if (headingRef.value)   $gsap.set(headingRef.value,    { autoAlpha: 0 })
   if (introRef.value)     $gsap.set(introRef.value,      { autoAlpha: 0, y: 24 })

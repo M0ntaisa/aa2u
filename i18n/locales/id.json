@@ -46,6 +46,16 @@
       "body": "Konsultasi, perancangan, pengembangan, dan konstruksi. Semua dengan metodologi BIM yang membuat detail terkoordinasi sejak hari pertama."
     }
   },
+  "error": {
+    "404_heading": "Halaman tidak ditemukan",
+    "404_body": "Tautan yang Anda ikuti mungkin sudah berubah atau halaman ini tidak pernah ada.",
+    "500_heading": "Terjadi kesalahan",
+    "500_body": "Ada yang tidak beres dari sisi kami. Coba muat ulang halaman atau kembali ke beranda.",
+    "code": "Kode kesalahan",
+    "back_home": "Kembali ke beranda",
+    "see_work": "Lihat karya",
+    "retry": "Coba lagi"
+  },
   "contact": {
     "eyebrow": "Kontak",
     "heading": "Punya proyek? Mari kita mulai dari pertanyaan.",

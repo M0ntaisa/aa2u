@@ -9,11 +9,13 @@ import Lenis from 'lenis'
  * tends to fight the OS and feels worse than native.
  */
 export default defineNuxtPlugin((nuxtApp) => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
   const lenis = new Lenis({
-    duration: 1.1,
+    duration: reduceMotion ? 0 : 1.1,
     easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     orientation: 'vertical',
-    smoothWheel: true,
+    smoothWheel: !reduceMotion,
     wheelMultiplier: 1,
     touchMultiplier: 2,
     syncTouch: false,
@@ -42,6 +44,20 @@ export default defineNuxtPlugin((nuxtApp) => {
       // Refresh after the new page paints so trigger rects are accurate.
       requestAnimationFrame(() => $ScrollTrigger.refresh())
     }
+  })
+
+  // Anchor links (#section) — route through Lenis so the scroll matches
+  // the rest of the page's easing. Plain `scroll-behavior: smooth` fights
+  // with Lenis when smoothWheel is active.
+  document.addEventListener('click', (e) => {
+    const link = (e.target as HTMLElement)?.closest('a[href^="#"]') as HTMLAnchorElement | null
+    if (!link) return
+    const href = link.getAttribute('href')
+    if (!href || href === '#') return
+    const target = document.querySelector(href)
+    if (!target) return
+    e.preventDefault()
+    lenis.scrollTo(target as HTMLElement, { offset: 0 })
   })
 
   return {

@@ -18,6 +18,7 @@ onMounted(() => {
   if (!$gsap || !cursorRef.value) return
 
   if (window.matchMedia('(hover: none)').matches) return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   enabled.value = true
 
   const xTo = $gsap.quickTo(cursorRef.value, 'x', { duration: 0.35, ease: 'power3' })

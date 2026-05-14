@@ -1,5 +1,18 @@
 import tailwindcss from '@tailwindcss/vite'
 
+// Derive the Supabase Storage host from SUPABASE_URL so NuxtImg can
+// optimize uploaded images. Falls back to empty when the placeholder
+// URL is still in use.
+const supabaseHost = (() => {
+  try {
+    const url = process.env.SUPABASE_URL
+    if (!url || url.includes('placeholder')) return null
+    return new URL(url).host
+  } catch {
+    return null
+  }
+})()
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
@@ -34,9 +47,11 @@ export default defineNuxtConfig({
   i18n: {
     defaultLocale: 'id',
     strategy: 'prefix_except_default',
+    // Used by useLocaleHead for absolute hreflang + canonical links.
+    baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     locales: [
-      { code: 'id', name: 'Indonesia', file: 'id.json' },
-      { code: 'en', name: 'English',   file: 'en.json' },
+      { code: 'id', name: 'Indonesia', language: 'id-ID', file: 'id.json' },
+      { code: 'en', name: 'English',   language: 'en-US', file: 'en.json' },
     ],
     detectBrowserLanguage: {
       useCookie: true,
@@ -56,7 +71,10 @@ export default defineNuxtConfig({
 
   image: {
     provider: 'ipx',
-    domains: [],
+    domains: [
+      ...(supabaseHost ? [supabaseHost] : []),
+      'picsum.photos', // dummy data in /data/*
+    ],
     formats: ['webp', 'avif'],
   },
 

@@ -4,7 +4,7 @@ const tt = useT()
 
 const { data: site } = await useSiteSettings()
 
-useSeoMeta({
+useSiteSeo({
   title: () => `${t('nav.contact')} — AA2U`,
   description: () => t('contact.description'),
 })

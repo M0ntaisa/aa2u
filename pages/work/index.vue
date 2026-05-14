@@ -1,11 +1,14 @@
 <script setup lang="ts">
 const { t } = useI18n()
-const { data: projects } = await useProjects()
+const { data: projects, pending } = await useProjects()
 
-useSeoMeta({
+useSiteSeo({
   title: () => `${t('nav.work')} — AA2U`,
   description: () => t('work.description'),
+  image: () => projects.value?.[0]?.cover_image,
 })
+
+const showSkeleton = computed(() => pending.value && !projects.value?.length)
 </script>
 
 <template>
@@ -19,8 +22,12 @@ useSeoMeta({
       </h1>
     </div>
 
+    <div v-if="showSkeleton" class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-20" aria-busy="true">
+      <ProjectCardSkeleton v-for="i in 4" :key="i" variant="grid" />
+    </div>
+
     <div
-      v-if="projects?.length"
+      v-else-if="projects?.length"
       v-reveal-stagger="{ stagger: 0.12, y: 50, start: 'top 90%' }"
       class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-20"
     >

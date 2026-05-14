@@ -20,6 +20,7 @@ export const usePageTransition = () => {
   function onLeave(el: Element, done: () => void) {
     const { $gsap } = useNuxtApp() as any
     if (!$gsap) return done()
+    if (prefersReducedMotion()) return done()
 
     if (flipIsActive.value) {
       $gsap.to(el, {
@@ -43,6 +44,7 @@ export const usePageTransition = () => {
   function onEnter(el: Element, done: () => void) {
     const { $gsap } = useNuxtApp() as any
     if (!$gsap) return done()
+    if (prefersReducedMotion()) return done()
 
     if (flipIsActive.value) {
       $gsap.set(el, { opacity: 0 })

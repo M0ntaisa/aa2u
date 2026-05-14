@@ -53,6 +53,7 @@ const form = ref<Form>({
 const categories = ref<Category[]>([])
 const status = ref<'idle' | 'loading' | 'saving' | 'saved' | 'error'>('idle')
 const errorMessage = ref('')
+const projectId = ref<string | null>(null)
 
 async function loadCategories() {
   if (isPlaceholder) {
@@ -90,6 +91,8 @@ async function loadProject() {
   if (!p) {
     throw createError({ statusCode: 404, statusMessage: 'Projek tidak ditemukan' })
   }
+
+  projectId.value = (p as any).id ?? null
 
   form.value = {
     slug: p.slug,
@@ -145,18 +148,47 @@ async function save() {
     seo_description: form.value.seo_description,
   }
 
-  const { error } = isNew.value
-    ? await supabase.from('projects').insert(payload)
-    : await supabase.from('projects').update(payload).eq('slug', slugParam.value)
+  // Pre-check slug uniqueness when slug changed (or on create) — gives a
+  // friendlier message than the raw 23505 unique_violation.
+  const slugChanged = isNew.value || form.value.slug !== slugParam.value
+  if (slugChanged) {
+    const { data: existing } = await supabase
+      .from('projects')
+      .select('id')
+      .eq('slug', form.value.slug)
+      .maybeSingle()
+    if (existing) {
+      status.value = 'error'
+      errorMessage.value = `Slug "${form.value.slug}" sudah dipakai projek lain.`
+      return
+    }
+  }
+
+  const query = isNew.value
+    ? supabase.from('projects').insert(payload).select('id, slug').maybeSingle()
+    : supabase.from('projects').update(payload).eq('slug', slugParam.value).select('id, slug').maybeSingle()
+  const { data: saved, error } = await query
 
   if (error) {
     status.value = 'error'
-    errorMessage.value = error.message
+    errorMessage.value = (error as any).code === '23505'
+      ? `Slug "${form.value.slug}" sudah dipakai projek lain.`
+      : error.message
     return
   }
 
   status.value = 'saved'
-  router.push('/admin/projects')
+
+  if (isNew.value && saved?.slug) {
+    // Redirect ke edit page supaya gallery bisa langsung dikelola
+    router.replace(`/admin/projects/${saved.slug}`)
+    return
+  }
+
+  if (saved?.slug && saved.slug !== slugParam.value) {
+    router.replace(`/admin/projects/${saved.slug}`)
+    return
+  }
 }
 
 async function remove() {
@@ -268,16 +300,17 @@ async function remove() {
       <!-- Media -->
       <section class="border border-white/10 px-6 py-6 space-y-6">
         <h2 class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)]">Media</h2>
-        <label class="block">
-          <span class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">URL gambar cover</span>
-          <input v-model="form.cover_image" type="url" placeholder="https://…"
-                 class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm rounded-sm" />
-          <span class="text-[10px] text-[var(--color-muted)]">Upload ke Supabase Storage atau paste URL eksternal. Manajemen gallery menyusul.</span>
-        </label>
-        <div v-if="form.cover_image" class="aspect-[16/9] overflow-hidden bg-white/5 max-w-md">
-          <img :src="form.cover_image" alt="cover preview" class="w-full h-full object-cover" />
-        </div>
+        <ImageUpload
+          v-model="form.cover_image"
+          label="Gambar cover"
+          bucket="project-images"
+          folder="cover"
+          hint="Tampil di list projek, hero detail page, dan OG image. Rasio 16:9 disarankan."
+        />
       </section>
+
+      <!-- Gallery -->
+      <ProjectGalleryManager :project-id="projectId" :project-slug="form.slug || slugParam" />
 
       <!-- SEO -->
       <section class="border border-white/10 px-6 py-6 space-y-6">

@@ -6,6 +6,8 @@ const otherLocale = computed(() => (locale.value === 'id' ? 'en' : 'id'))
 
 <template>
   <div class="min-h-screen">
+    <IntroCurtain />
+
     <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 mix-blend-difference">
       <NuxtLink :to="localePath('/')" class="text-sm font-display tracking-wide">
         AA2U
@@ -17,6 +19,7 @@ const otherLocale = computed(() => (locale.value === 'id' ? 'en' : 'id'))
         <button
           class="link-hover ml-4 text-xs uppercase tracking-wider"
           :data-cursor-label="otherLocale.toUpperCase()"
+          :aria-label="`Switch language to ${otherLocale === 'en' ? 'English' : 'Bahasa Indonesia'}`"
           @click="setLocale(otherLocale)"
         >
           {{ otherLocale.toUpperCase() }}

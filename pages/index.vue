@@ -5,9 +5,10 @@ const tt = useT()
 const { data: projects } = await useProjects({ featured: true })
 const { data: site } = await useSiteSettings()
 
-useSeoMeta({
+useSiteSeo({
   title: () => t('home.seo_title'),
   description: () => t('home.seo_description'),
+  image: () => projects.value?.[0]?.cover_image,
 })
 </script>
 

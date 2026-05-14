@@ -29,6 +29,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     getSSRProps: noopSSR,
     mounted(el, binding) {
       if (!import.meta.client) return
+      if (prefersReducedMotion()) return
       const { $gsap, $ScrollTrigger } = useNuxtApp() as any
       if (!$gsap || !$ScrollTrigger) return
 
@@ -52,6 +53,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     getSSRProps: noopSSR,
     mounted(el, binding) {
       if (!import.meta.client) return
+      if (prefersReducedMotion()) return
       const { $gsap, $ScrollTrigger } = useNuxtApp() as any
       if (!$gsap || !$ScrollTrigger) return
 

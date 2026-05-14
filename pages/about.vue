@@ -6,9 +6,34 @@ const { data: team } = await useTeam()
 const { data: principles } = await usePrinciples()
 const { data: site } = await useSiteSettings()
 
-useSeoMeta({
+useSiteSeo({
   title: () => `${t('nav.about')} — AA2U`,
   description: () => tt(site.value?.manifesto),
+})
+
+const config = useRuntimeConfig()
+const siteUrl = (config.public as any).siteUrl as string
+
+const organizationJsonLd = computed(() => JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.value?.studio_name ?? 'AA2U',
+  url: siteUrl,
+  email: site.value?.contact_email,
+  telephone: site.value?.contact_phone,
+  address: tt(site.value?.address),
+  sameAs: [
+    site.value?.socials?.instagram,
+    site.value?.socials?.linkedin,
+    site.value?.socials?.behance,
+  ].filter(Boolean),
+  description: tt(site.value?.manifesto),
+}))
+
+useHead({
+  script: [
+    { type: 'application/ld+json', innerHTML: () => organizationJsonLd.value },
+  ],
 })
 </script>
 
