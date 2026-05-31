@@ -47,13 +47,11 @@ export const usePageTransition = () => {
     if (prefersReducedMotion()) return done()
 
     if (flipIsActive.value) {
-      $gsap.set(el, { opacity: 0 })
-      $gsap.to(el, {
-        opacity: 1,
-        duration: 0.4,
-        ease: 'power2.out',
-        onComplete: done,
-      })
+      // Flip morph plays from t=0 on the destination element. If we fade
+      // the page during it, the user only sees the tail of the morph.
+      // Skip the fade — let the Flip animation own the visual transition.
+      $gsap.set(el, { opacity: 1, y: 0 })
+      done()
       return
     }
 

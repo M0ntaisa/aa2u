@@ -2,10 +2,32 @@
   "nav": {
     "work": "Karya",
     "about": "Tentang",
-    "contact": "Kontak"
+    "contact": "Kontak",
+    "studio": "Studio",
+    "index": "Indeks",
+    "viewing": "Melihat",
+    "menu": "Menu",
+    "close": "Tutup"
   },
   "footer": {
-    "tagline": "Arsitektur tanpa kompromi"
+    "tagline": "Arsitektur tanpa kompromi",
+    "eyebrow": "Kontak",
+    "lets_build_a": "Mari bangun",
+    "lets_build_b": "sesuatu bersama.",
+    "write_us": "Tulis",
+    "studio": "Studio",
+    "contact": "Kontak",
+    "elsewhere": "Lainnya",
+    "built_with": "Dibangun dengan presisi",
+    "newsletter_heading": "Ikuti jurnal studio dan pembaruan proyek kami.",
+    "newsletter_placeholder": "Alamat email",
+    "newsletter_submit": "Kirim",
+    "newsletter_success": "Terima kasih — kami akan kabari segera.",
+    "newsletter_error": "Terjadi kesalahan. Coba lagi.",
+    "head_office": "Kantor pusat",
+    "email_us": "Email",
+    "call_us": "Telepon",
+    "sitemap": "Sitemap"
   },
   "home": {
     "seo_title": "AA2U Arsitektur",
@@ -14,13 +36,24 @@
     "intro": "Studio arsitektur yang berfokus pada desain presisi, metodologi BIM, dan kreativitas tanpa batas.",
     "scroll_hint": "Gulir untuk menjelajah",
     "featured_eyebrow": "Karya Pilihan",
-    "featured_heading": "Proyek yang membentuk cara kami berpikir."
+    "featured_heading": "Proyek yang membentuk cara kami berpikir.",
+    "manifesto_eyebrow": "Manifesto"
   },
   "work": {
     "eyebrow": "Karya",
     "heading": "Setiap proyek adalah pertanyaan yang dijawab dengan ruang.",
     "description": "Pilihan proyek arsitektur dan perancangan AA2U.",
-    "empty": "Belum ada proyek yang dipublikasikan."
+    "empty": "Belum ada proyek yang dipublikasikan.",
+    "index_label": "Indeks",
+    "years_label": "Tahun",
+    "search_placeholder": "Cari proyek, lokasi, kategori…",
+    "all": "Semua",
+    "year": "Tahun",
+    "clear": "Hapus",
+    "clear_filters": "Hapus filter",
+    "showing": "Menampilkan",
+    "of": "dari",
+    "no_results": "Tidak ada proyek yang cocok dengan filter."
   },
   "project": {
     "location": "Lokasi",

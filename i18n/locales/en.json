@@ -2,10 +2,32 @@
   "nav": {
     "work": "Work",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "studio": "Studio",
+    "index": "Index",
+    "viewing": "Viewing",
+    "menu": "Menu",
+    "close": "Close"
   },
   "footer": {
-    "tagline": "Architecture without compromise"
+    "tagline": "Architecture without compromise",
+    "eyebrow": "Contact",
+    "lets_build_a": "Let's build",
+    "lets_build_b": "something together.",
+    "write_us": "Write",
+    "studio": "Studio",
+    "contact": "Contact",
+    "elsewhere": "Elsewhere",
+    "built_with": "Built with precision",
+    "newsletter_heading": "Follow our studio journal and project updates.",
+    "newsletter_placeholder": "Email address",
+    "newsletter_submit": "Send",
+    "newsletter_success": "Thank you — we'll be in touch shortly.",
+    "newsletter_error": "Something went wrong. Try again.",
+    "head_office": "Head office",
+    "email_us": "Email us",
+    "call_us": "Call us",
+    "sitemap": "Sitemap"
   },
   "home": {
     "seo_title": "AA2U Architecture Studio",
@@ -14,13 +36,24 @@
     "intro": "An architecture studio focused on precision design, BIM methodology, and uncompromising creativity.",
     "scroll_hint": "Scroll to discover",
     "featured_eyebrow": "Selected Work",
-    "featured_heading": "Projects that shape the way we think."
+    "featured_heading": "Projects that shape the way we think.",
+    "manifesto_eyebrow": "Manifesto"
   },
   "work": {
     "eyebrow": "Work",
     "heading": "Every project is a question answered with space.",
     "description": "Selected architecture and design projects by AA2U.",
-    "empty": "No projects published yet."
+    "empty": "No projects published yet.",
+    "index_label": "Index",
+    "years_label": "Years",
+    "search_placeholder": "Search projects, locations, categories…",
+    "all": "All",
+    "year": "Year",
+    "clear": "Clear",
+    "clear_filters": "Clear filters",
+    "showing": "Showing",
+    "of": "of",
+    "no_results": "No projects match the current filters."
   },
   "project": {
     "location": "Location",

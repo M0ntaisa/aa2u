@@ -15,9 +15,16 @@ useSiteSeo({
 <template>
   <div>
     <HeroIntro
-      :studio-name="site?.studio_name || '2A2U'"
-      :intro="tt(site?.manifesto)"
+      :studio-name="site?.studio_name || 'AA2U'"
       :scroll-hint="t('home.scroll_hint')"
+      :projects="projects ?? []"
+    />
+
+    <ManifestoSection
+      v-if="site?.manifesto"
+      :text="tt(site.manifesto)"
+      :eyebrow="t('home.manifesto_eyebrow')"
+      :signature="site?.studio_name || 'AA2U'"
     />
 
     <ProjectShowcase
