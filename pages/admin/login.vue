@@ -9,8 +9,18 @@ const { isPlaceholder } = useContentSource()
 const form = reactive({ email: '', password: '' })
 const status = ref<'idle' | 'submitting' | 'error'>('idle')
 const errorMessage = ref('')
+const showPassword = ref(false)
 
 const showUnauthorizedNote = computed(() => route.query.error === 'unauthorized')
+
+/** Supabase returns raw English strings; map the common ones to plain Indonesian. */
+function humanize(message: string) {
+  if (/invalid login credentials/i.test(message)) return 'Email atau password salah.'
+  if (/email not confirmed/i.test(message)) return 'Email belum dikonfirmasi. Cek kotak masuk kamu.'
+  if (/rate limit|too many/i.test(message)) return 'Terlalu banyak percobaan. Coba lagi beberapa saat lagi.'
+  if (/network|fetch/i.test(message)) return 'Tidak bisa terhubung ke server. Periksa koneksi internet.'
+  return message
+}
 
 async function submit() {
   if (isPlaceholder) {
@@ -28,66 +38,132 @@ async function submit() {
 
   if (error) {
     status.value = 'error'
-    errorMessage.value = error.message
+    errorMessage.value = humanize(error.message)
     return
   }
 
   router.push('/admin')
 }
+
+useHead({ title: 'Masuk — AA2U Admin' })
 </script>
 
 <template>
-  <div class="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-6">
-    <div class="w-full max-w-sm">
-      <div class="mb-12 text-center">
-        <h1 class="font-display text-3xl tracking-tight">AA2U Admin</h1>
-        <p class="mt-2 text-sm text-[var(--color-muted)]">Masuk untuk mengelola konten</p>
+  <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--ad-canvas)] px-6 py-12">
+    <!-- Ambient background: soft accent glow + faint grid -->
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.55]"
+      style="background:
+        radial-gradient(60rem 40rem at 50% -10%, rgba(122,162,247,0.14), transparent 70%),
+        radial-gradient(40rem 30rem at 10% 110%, rgba(192,202,245,0.06), transparent 70%);"
+      aria-hidden="true"
+    />
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.35]"
+      style="background-image:
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: radial-gradient(60rem 40rem at 50% 40%, black, transparent 75%);"
+      aria-hidden="true"
+    />
+
+    <div class="relative w-full max-w-[380px]">
+      <div class="mb-7 text-center">
+        <span class="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--ad-accent)] font-display text-lg font-bold text-[var(--ad-accent-fg)]">
+          A
+        </span>
+        <h1 class="font-display text-[22px] tracking-tight text-[var(--ad-fg)]">AA2U Admin</h1>
+        <p class="mt-1.5 text-[13px] text-[var(--ad-fg-muted)]">Masuk untuk mengelola konten studio</p>
       </div>
 
-      <div v-if="isPlaceholder" class="mb-6 bg-amber-300/10 border border-amber-300/30 px-4 py-3 text-xs text-amber-200">
-        Mode demo aktif — login tidak tersedia. Tambahkan kredensial Supabase di
-        <code>.env</code> untuk mengaktifkan.
+      <div
+        v-if="isPlaceholder"
+        class="mb-4 flex items-start gap-2.5 rounded-[var(--ad-radius)] border border-[rgba(224,175,104,0.28)] bg-[rgba(224,175,104,0.09)] px-3.5 py-3 text-[12.5px] text-[var(--ad-warning)]"
+      >
+        <AdminIcon name="alert" :size="14" class="mt-0.5" />
+        <p>
+          Mode demo aktif — login tidak tersedia. Tambahkan kredensial Supabase di
+          <code class="ad-kbd">.env</code> untuk mengaktifkan.
+        </p>
       </div>
 
-      <div v-if="showUnauthorizedNote" class="mb-6 bg-red-500/10 border border-red-500/30 px-4 py-3 text-xs text-red-300">
-        Akun ini tidak punya akses admin. Hubungi pengelola untuk diberi flag <code>is_admin</code>.
+      <div
+        v-if="showUnauthorizedNote"
+        class="mb-4 flex items-start gap-2.5 rounded-[var(--ad-radius)] border border-[rgba(247,118,142,0.28)] bg-[rgba(247,118,142,0.09)] px-3.5 py-3 text-[12.5px] text-[var(--ad-danger)]"
+      >
+        <AdminIcon name="lock" :size="14" class="mt-0.5" />
+        <p>
+          Akun ini tidak punya akses admin. Hubungi pengelola untuk diberi flag
+          <code class="ad-kbd">is_admin</code>.
+        </p>
       </div>
 
-      <form class="space-y-6" @submit.prevent="submit">
-        <label class="block">
-          <span class="text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">Email</span>
-          <input
-            v-model="form.email"
-            type="email"
-            required
-            autocomplete="email"
-            class="mt-2 w-full bg-transparent border-b border-white/30 focus:border-white py-2 outline-none text-sm"
-          />
-        </label>
-        <label class="block">
-          <span class="text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">Password</span>
-          <input
-            v-model="form.password"
-            type="password"
-            required
-            autocomplete="current-password"
-            class="mt-2 w-full bg-transparent border-b border-white/30 focus:border-white py-2 outline-none text-sm"
-          />
-        </label>
+      <div class="ad-panel p-6">
+        <form class="space-y-4" @submit.prevent="submit">
+          <AdminField label="Email">
+            <div class="ad-input-group">
+              <span class="ad-input-group-icon"><AdminIcon name="mail" :size="14" /></span>
+              <input
+                v-model="form.email"
+                type="email"
+                required
+                autocomplete="email"
+                placeholder="kamu@studio.com"
+                class="ad-input"
+                :class="status === 'error' ? 'ad-input-invalid' : ''"
+              />
+            </div>
+          </AdminField>
 
-        <p v-if="errorMessage" class="text-xs text-red-400">{{ errorMessage }}</p>
+          <AdminField label="Password">
+            <div class="ad-input-group">
+              <span class="ad-input-group-icon"><AdminIcon name="lock" :size="14" /></span>
+              <input
+                v-model="form.password"
+                :type="showPassword ? 'text' : 'password'"
+                required
+                autocomplete="current-password"
+                placeholder="••••••••"
+                class="ad-input ad-input-action"
+                :class="status === 'error' ? 'ad-input-invalid' : ''"
+              />
+              <button
+                type="button"
+                class="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1.5 text-[var(--ad-fg-subtle)] transition-colors hover:text-[var(--ad-fg)]"
+                :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
+                @click="showPassword = !showPassword"
+              >
+                <AdminIcon :name="showPassword ? 'eyeOff' : 'eye'" :size="15" />
+              </button>
+            </div>
+          </AdminField>
 
-        <button
-          type="submit"
-          :disabled="status === 'submitting' || isPlaceholder"
-          class="w-full text-sm uppercase tracking-[0.25em] border border-white/40 hover:border-white py-3 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          <p v-if="errorMessage" class="ad-error-text flex items-start gap-1.5">
+            <AdminIcon name="alert" :size="13" class="mt-0.5" />
+            {{ errorMessage }}
+          </p>
+
+          <AdminButton
+            type="submit"
+            variant="primary"
+            class="w-full"
+            :loading="status === 'submitting'"
+            :disabled="isPlaceholder"
+          >
+            {{ status === 'submitting' ? 'Memverifikasi…' : 'Masuk' }}
+          </AdminButton>
+        </form>
+      </div>
+
+      <p class="mt-6 text-center text-[12.5px]">
+        <NuxtLink
+          to="/"
+          class="inline-flex items-center gap-1.5 text-[var(--ad-fg-subtle)] transition-colors hover:text-[var(--ad-fg)]"
         >
-          {{ status === 'submitting' ? 'Masuk…' : 'Masuk' }}
-        </button>
-      </form>
-
-      <p class="mt-12 text-center text-xs text-[var(--color-muted)]">
-        <NuxtLink to="/" class="hover:text-white">← Kembali ke situs</NuxtLink>
+          <AdminIcon name="arrowLeft" :size="13" />
+          Kembali ke situs
+        </NuxtLink>
       </p>
     </div>
   </div>

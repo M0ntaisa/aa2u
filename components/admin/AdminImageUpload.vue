@@ -25,17 +25,17 @@ const emit = defineEmits<{
 
 const supabase = useSupabaseClient()
 const { isPlaceholder } = useContentSource()
+const toast = useToast()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const isDragging = ref(false)
 const status = ref<'idle' | 'uploading' | 'error'>('idle')
-const progress = ref(0)
 const errorMessage = ref('')
 
 const acceptAttr = computed(() => props.accept.join(','))
 const maxBytes = computed(() => props.maxSizeMb * 1024 * 1024)
-
 const previewUrl = computed(() => model.value || '')
+const formatList = computed(() => props.accept.map(a => a.split('/')[1]).join(' · '))
 
 function pick() {
   if (status.value === 'uploading') return
@@ -99,7 +99,6 @@ async function upload(file: File) {
   }
 
   status.value = 'uploading'
-  progress.value = 0
 
   const path = makeFilename(file)
   const { error } = await supabase.storage.from(props.bucket).upload(path, file, {
@@ -111,6 +110,7 @@ async function upload(file: File) {
   if (error) {
     status.value = 'error'
     errorMessage.value = error.message
+    toast.error('Upload gagal', error.message)
     return
   }
 
@@ -130,71 +130,74 @@ function remove() {
 </script>
 
 <template>
-  <div class="space-y-2">
-    <label class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
-      {{ label }}
-    </label>
+  <div>
+    <span class="ad-label">{{ label }}</span>
 
-    <div v-if="previewUrl" class="space-y-3">
-      <div :class="aspect" class="overflow-hidden bg-white/5 max-w-md border border-white/10">
-        <img :src="previewUrl" :alt="label" class="w-full h-full object-cover" />
+    <div v-if="previewUrl" class="space-y-2.5">
+      <div
+        :class="aspect"
+        class="max-w-md overflow-hidden rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[var(--ad-surface-sunk)]"
+      >
+        <img :src="previewUrl" :alt="label" class="h-full w-full object-cover" />
       </div>
-      <div class="flex items-center gap-3">
-        <button
-          type="button"
-          class="text-xs uppercase tracking-[0.2em] border border-white/20 hover:border-white/60 px-4 py-2 transition-colors"
+      <div class="flex items-center gap-2">
+        <AdminButton
+          variant="secondary"
+          size="sm"
+          icon="refresh"
           :disabled="status === 'uploading'"
           @click="pick"
         >
           Ganti
-        </button>
-        <button
-          type="button"
-          class="text-xs uppercase tracking-[0.2em] border border-red-500/40 text-red-300 hover:bg-red-500/10 px-4 py-2 transition-colors"
+        </AdminButton>
+        <AdminButton
+          variant="danger"
+          size="sm"
+          icon="trash"
           :disabled="status === 'uploading'"
           @click="remove"
         >
           Hapus
-        </button>
+        </AdminButton>
       </div>
     </div>
 
-    <div
+    <button
       v-else
+      type="button"
       :class="[
         aspect,
-        'max-w-md border border-dashed flex flex-col items-center justify-center text-center cursor-pointer transition-colors',
-        isDragging ? 'border-white/60 bg-white/5' : 'border-white/20 hover:border-white/40',
-        status === 'uploading' ? 'opacity-60 cursor-wait' : '',
+        'flex w-full max-w-md cursor-pointer flex-col items-center justify-center rounded-[var(--ad-radius-sm)] border border-dashed text-center transition-colors',
+        isDragging
+          ? 'border-[var(--ad-accent)] bg-[rgba(122,162,247,0.07)]'
+          : 'border-[var(--ad-border-strong)] bg-[var(--ad-surface-sunk)] hover:border-[var(--ad-accent)]',
+        status === 'uploading' ? 'cursor-wait opacity-60' : '',
       ]"
       @click="pick"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop.prevent="onDrop"
     >
-      <div v-if="status === 'uploading'" class="text-sm text-[var(--color-muted)]">
-        Mengunggah…
-      </div>
-      <template v-else>
-        <div class="text-sm">
-          <span class="underline">Pilih file</span>
-          <span class="text-[var(--color-muted)]"> atau seret ke sini</span>
-        </div>
-        <div class="mt-2 text-[10px] uppercase tracking-wide text-[var(--color-muted)]">
-          {{ accept.map(a => a.split('/')[1]).join(' · ') }} · maks {{ maxSizeMb }}MB
-        </div>
+      <template v-if="status === 'uploading'">
+        <AdminIcon name="loader" :size="20" class="ad-spin text-[var(--ad-accent)]" />
+        <span class="mt-2.5 text-[13px] text-[var(--ad-fg-muted)]">Mengunggah…</span>
       </template>
-    </div>
 
-    <input
-      ref="fileInput"
-      type="file"
-      :accept="acceptAttr"
-      class="hidden"
-      @change="onChange"
-    />
+      <template v-else>
+        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ad-surface-hover)] text-[var(--ad-fg-subtle)]">
+          <AdminIcon name="upload" :size="16" />
+        </span>
+        <span class="mt-2.5 text-[13px]">
+          <span class="text-[var(--ad-accent)]">Pilih file</span>
+          <span class="text-[var(--ad-fg-muted)]"> atau seret ke sini</span>
+        </span>
+        <span class="ad-eyebrow mt-1.5">{{ formatList }} · maks {{ maxSizeMb }}MB</span>
+      </template>
+    </button>
 
-    <p v-if="hint" class="text-[10px] text-[var(--color-muted)]">{{ hint }}</p>
-    <p v-if="status === 'error'" class="text-xs text-red-400">{{ errorMessage }}</p>
+    <input ref="fileInput" type="file" :accept="acceptAttr" class="hidden" @change="onChange" />
+
+    <p v-if="hint && status !== 'error'" class="ad-hint">{{ hint }}</p>
+    <p v-if="status === 'error'" class="ad-error-text mt-1.5">{{ errorMessage }}</p>
   </div>
 </template>

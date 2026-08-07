@@ -1,87 +1,277 @@
 <script setup lang="ts">
+import type { ProjectStatus } from '~/types/content'
+
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
 const tt = useT()
-const { data: projects } = await useAdminProjects()
+const { data: projects, status: fetchStatus } = await useAdminProjects()
 
-const statusBadge = (s: string) => {
-  switch (s) {
-    case 'published':      return { label: 'Published',     cls: 'bg-emerald-500/20 text-emerald-300' }
-    case 'in_development': return { label: 'In development', cls: 'bg-amber-500/20 text-amber-200' }
-    default:               return { label: 'Draft',          cls: 'bg-white/10 text-[var(--color-muted)]' }
-  }
+type StatusFilter = 'all' | ProjectStatus
+type SortKey = 'sort_order' | 'title' | 'year' | 'status'
+
+const search = ref('')
+const statusFilter = ref<StatusFilter>('all')
+const sortKey = ref<SortKey>('sort_order')
+const sortAsc = ref(true)
+
+const statusMeta: Record<ProjectStatus, { label: string; tone: 'success' | 'warning' | 'neutral' }> = {
+  published:      { label: 'Published',      tone: 'success' },
+  in_development: { label: 'In development', tone: 'warning' },
+  draft:          { label: 'Draft',          tone: 'neutral' },
 }
+
+const counts = computed(() => {
+  const list = projects.value ?? []
+  return {
+    all: list.length,
+    published: list.filter(p => p.status === 'published').length,
+    in_development: list.filter(p => p.status === 'in_development').length,
+    draft: list.filter(p => p.status === 'draft').length,
+  }
+})
+
+const filters: { key: StatusFilter; label: string }[] = [
+  { key: 'all', label: 'Semua' },
+  { key: 'published', label: 'Published' },
+  { key: 'in_development', label: 'In development' },
+  { key: 'draft', label: 'Draft' },
+]
+
+const filtered = computed(() => {
+  const q = search.value.trim().toLowerCase()
+  let list = [...(projects.value ?? [])]
+
+  if (statusFilter.value !== 'all') {
+    list = list.filter(p => p.status === statusFilter.value)
+  }
+
+  if (q) {
+    list = list.filter(p =>
+      tt(p.title).toLowerCase().includes(q)
+      || p.slug.toLowerCase().includes(q)
+      || String(p.year ?? '').includes(q)
+      || (p.category ? tt(p.category.name).toLowerCase().includes(q) : false),
+    )
+  }
+
+  const dir = sortAsc.value ? 1 : -1
+  return list.sort((a, b) => {
+    switch (sortKey.value) {
+      case 'title':  return tt(a.title).localeCompare(tt(b.title)) * dir
+      case 'year':   return ((a.year ?? 0) - (b.year ?? 0)) * dir
+      case 'status': return a.status.localeCompare(b.status) * dir
+      default:       return ((a.sort_order ?? 0) - (b.sort_order ?? 0)) * dir
+    }
+  })
+})
+
+function toggleSort(key: SortKey) {
+  if (sortKey.value === key) {
+    sortAsc.value = !sortAsc.value
+    return
+  }
+  sortKey.value = key
+  sortAsc.value = true
+}
+
+function resetFilters() {
+  search.value = ''
+  statusFilter.value = 'all'
+}
+
+const hasFilters = computed(() => !!search.value.trim() || statusFilter.value !== 'all')
 </script>
 
 <template>
-  <div class="px-8 py-10">
-    <header class="flex items-end justify-between mb-10">
-      <div>
-        <h1 class="font-display text-4xl tracking-tight">Projek</h1>
-        <p class="mt-2 text-sm text-[var(--color-muted)]">
-          {{ projects?.length ?? 0 }} projek total
-        </p>
+  <div class="mx-auto max-w-[1180px]">
+    <AdminPageHeader title="Projek" description="Semua entri portofolio, termasuk draft.">
+      <template #meta>
+        <span class="text-[var(--ad-fg-subtle)]">·</span>
+        <span>{{ counts.all }} total</span>
+        <span class="text-[var(--ad-fg-subtle)]">·</span>
+        <span>{{ counts.published }} published</span>
+      </template>
+      <template #actions>
+        <AdminButton to="/admin/projects/new" variant="primary" icon="plus">Tambah projek</AdminButton>
+      </template>
+    </AdminPageHeader>
+
+    <!-- Toolbar -->
+    <div class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div class="ad-input-group max-w-xs flex-1">
+        <span class="ad-input-group-icon"><AdminIcon name="search" :size="15" /></span>
+        <input
+          v-model="search"
+          type="search"
+          placeholder="Cari judul, slug, tahun…"
+          class="ad-input"
+          aria-label="Cari projek"
+        />
       </div>
-      <NuxtLink
-        to="/admin/projects/new"
-        class="text-sm uppercase tracking-[0.2em] border border-white/40 hover:border-white px-5 py-2.5 transition-colors"
-      >
-        + Tambah projek
-      </NuxtLink>
-    </header>
 
-    <div v-if="projects?.length" class="border border-white/10">
-      <table class="w-full text-sm">
-        <thead class="border-b border-white/10 bg-white/5">
-          <tr class="text-left text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
-            <th class="px-4 py-3 font-normal">#</th>
-            <th class="px-4 py-3 font-normal">Title</th>
-            <th class="px-4 py-3 font-normal">Year</th>
-            <th class="px-4 py-3 font-normal">Category</th>
-            <th class="px-4 py-3 font-normal">Status</th>
-            <th class="px-4 py-3 font-normal">Featured</th>
-            <th class="px-4 py-3 font-normal text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="p in projects"
-            :key="p.slug"
-            class="border-b border-white/5 hover:bg-white/5 transition-colors"
-          >
-            <td class="px-4 py-3 text-[var(--color-muted)]">{{ String(p.sort_order + 1).padStart(2, '0') }}</td>
-            <td class="px-4 py-3">
-              <div class="font-medium">{{ tt(p.title) }}</div>
-              <div class="text-xs text-[var(--color-muted)]">/{{ p.slug }}</div>
-            </td>
-            <td class="px-4 py-3">{{ p.year ?? '—' }}</td>
-            <td class="px-4 py-3 text-[var(--color-muted)]">
-              {{ p.category ? tt(p.category.name) : '—' }}
-            </td>
-            <td class="px-4 py-3">
-              <span class="inline-block px-2 py-0.5 text-xs rounded-sm" :class="statusBadge(p.status).cls">
-                {{ statusBadge(p.status).label }}
-              </span>
-            </td>
-            <td class="px-4 py-3">
-              <span v-if="p.is_featured" class="text-xs text-emerald-300">★</span>
-              <span v-else class="text-xs text-[var(--color-muted)]">—</span>
-            </td>
-            <td class="px-4 py-3 text-right">
-              <NuxtLink
-                :to="`/admin/projects/${p.slug}`"
-                class="text-xs uppercase tracking-[0.2em] hover:text-white text-[var(--color-muted)]"
-              >
-                Edit →
-              </NuxtLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="ad-seg self-start lg:self-auto">
+        <button
+          v-for="f in filters"
+          :key="f.key"
+          type="button"
+          class="ad-seg-item"
+          :aria-pressed="statusFilter === f.key"
+          @click="statusFilter = f.key"
+        >
+          {{ f.label }}
+          <span class="tabular-nums text-[var(--ad-fg-subtle)]">{{ counts[f.key] }}</span>
+        </button>
+      </div>
     </div>
 
-    <div v-else class="border border-white/10 px-8 py-16 text-center text-[var(--color-muted)]">
-      Belum ada projek. <NuxtLink to="/admin/projects/new" class="underline">Tambah satu</NuxtLink>.
-    </div>
+    <!-- Loading -->
+    <AdminCard v-if="fetchStatus === 'pending'" flush>
+      <div class="space-y-3 p-5">
+        <div v-for="i in 5" :key="i" class="ad-skeleton h-10 w-full" />
+      </div>
+    </AdminCard>
+
+    <!-- Table -->
+    <AdminCard v-else-if="filtered.length" flush>
+      <div class="ad-scroll overflow-x-auto">
+        <table class="ad-table">
+          <thead>
+            <tr>
+              <th class="w-14">
+                <button type="button" class="flex items-center gap-1 hover:text-[var(--ad-fg)]" @click="toggleSort('sort_order')">
+                  #
+                  <AdminIcon v-if="sortKey === 'sort_order'" :name="sortAsc ? 'chevronUp' : 'chevronDown'" :size="11" />
+                </button>
+              </th>
+              <th>
+                <button type="button" class="flex items-center gap-1 hover:text-[var(--ad-fg)]" @click="toggleSort('title')">
+                  Judul
+                  <AdminIcon v-if="sortKey === 'title'" :name="sortAsc ? 'chevronUp' : 'chevronDown'" :size="11" />
+                </button>
+              </th>
+              <th class="w-24">
+                <button type="button" class="flex items-center gap-1 hover:text-[var(--ad-fg)]" @click="toggleSort('year')">
+                  Tahun
+                  <AdminIcon v-if="sortKey === 'year'" :name="sortAsc ? 'chevronUp' : 'chevronDown'" :size="11" />
+                </button>
+              </th>
+              <th class="w-40">Kategori</th>
+              <th class="w-36">
+                <button type="button" class="flex items-center gap-1 hover:text-[var(--ad-fg)]" @click="toggleSort('status')">
+                  Status
+                  <AdminIcon v-if="sortKey === 'status'" :name="sortAsc ? 'chevronUp' : 'chevronDown'" :size="11" />
+                </button>
+              </th>
+              <th class="w-20 text-center">Featured</th>
+              <th class="w-20 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="p in filtered" :key="p.slug">
+              <td class="ad-table-num">{{ String((p.sort_order ?? 0) + 1).padStart(2, '0') }}</td>
+
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="h-9 w-12 shrink-0 overflow-hidden rounded bg-[var(--ad-surface-sunk)]">
+                    <img
+                      v-if="p.cover_image"
+                      :src="p.cover_image"
+                      alt=""
+                      class="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    <div v-else class="flex h-full w-full items-center justify-center text-[var(--ad-fg-subtle)]">
+                      <AdminIcon name="image" :size="13" />
+                    </div>
+                  </div>
+                  <div class="min-w-0">
+                    <NuxtLink
+                      :to="`/admin/projects/${p.slug}`"
+                      class="block truncate font-medium hover:text-[var(--ad-accent)]"
+                    >
+                      {{ tt(p.title) || '(tanpa judul)' }}
+                    </NuxtLink>
+                    <span class="block truncate text-[11.5px] text-[var(--ad-fg-subtle)]">/{{ p.slug }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td class="ad-table-num">{{ p.year ?? '—' }}</td>
+
+              <td class="text-[var(--ad-fg-muted)]">
+                {{ p.category ? tt(p.category.name) : '—' }}
+              </td>
+
+              <td>
+                <AdminBadge :tone="statusMeta[p.status].tone" dot>
+                  {{ statusMeta[p.status].label }}
+                </AdminBadge>
+              </td>
+
+              <td class="text-center">
+                <AdminIcon
+                  v-if="p.is_featured"
+                  name="star"
+                  :size="14"
+                  class="mx-auto text-[var(--ad-warning)]"
+                />
+                <span v-else class="text-[var(--ad-fg-subtle)]">—</span>
+              </td>
+
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-1">
+                  <AdminButton
+                    :href="`/work/${p.slug}`"
+                    variant="ghost"
+                    size="sm"
+                    icon-only
+                    icon="external"
+                    label="Lihat di situs"
+                  />
+                  <AdminButton
+                    :to="`/admin/projects/${p.slug}`"
+                    variant="ghost"
+                    size="sm"
+                    icon-only
+                    icon="edit"
+                    label="Edit projek"
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <template #footer>
+        <p class="text-[12px] text-[var(--ad-fg-subtle)]">
+          Menampilkan {{ filtered.length }} dari {{ counts.all }} projek.
+          Urutan tampil di situs mengikuti kolom <span class="ad-kbd">#</span>.
+        </p>
+      </template>
+    </AdminCard>
+
+    <!-- Empty -->
+    <AdminEmptyState
+      v-else-if="hasFilters"
+      icon="search"
+      title="Tidak ada projek yang cocok"
+      description="Coba kata kunci lain atau ganti filter status."
+    >
+      <AdminButton variant="secondary" size="sm" icon="refresh" @click="resetFilters">
+        Reset filter
+      </AdminButton>
+    </AdminEmptyState>
+
+    <AdminEmptyState
+      v-else
+      icon="projects"
+      title="Belum ada projek"
+      description="Portofolio masih kosong. Tambahkan entri pertama untuk mulai mengisi halaman /work."
+    >
+      <AdminButton to="/admin/projects/new" variant="primary" size="sm" icon="plus">
+        Tambah projek
+      </AdminButton>
+    </AdminEmptyState>
   </div>
 </template>

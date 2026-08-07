@@ -12,7 +12,8 @@ watch(user, (u) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[var(--color-bg)] flex items-center justify-center text-sm text-[var(--color-muted)]">
-    Memverifikasi sesi…
+  <div class="flex min-h-screen flex-col items-center justify-center gap-3 bg-[var(--ad-canvas)]">
+    <AdminIcon name="loader" :size="20" class="ad-spin text-[var(--ad-accent)]" />
+    <p class="text-[13px] text-[var(--ad-fg-muted)]">Memverifikasi sesi…</p>
   </div>
 </template>

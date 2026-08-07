@@ -9,12 +9,13 @@ interface PrincipleRow {
   description: I18nField
   sort_order: number
   _saving?: boolean
-  _saved?: boolean
   _error?: string
 }
 
 const supabase = useSupabaseClient()
 const { isPlaceholder } = useContentSource()
+const toast = useToast()
+const { ask } = useConfirm()
 
 const items = ref<PrincipleRow[]>([])
 const status = ref<'idle' | 'loading' | 'error'>('idle')
@@ -71,16 +72,15 @@ function addRow() {
 
 async function saveRow(row: PrincipleRow) {
   if (isPlaceholder) {
-    alert('Mode demo: aktifkan Supabase di .env untuk menyimpan.')
+    toast.warning('Mode demo', 'Aktifkan Supabase di .env untuk menyimpan.')
     return
   }
-  if (!row.title.id) {
+  if (!row.title.id.trim()) {
     row._error = 'Judul (ID) wajib diisi.'
     return
   }
 
   row._saving = true
-  row._saved = false
   row._error = ''
 
   const payload = {
@@ -98,115 +98,117 @@ async function saveRow(row: PrincipleRow) {
 
   if (error) {
     row._error = error.message
+    toast.error('Gagal menyimpan', error.message)
     return
   }
 
-  if (!row.id && data?.id) row.id = data.id
-  row._saved = true
-  setTimeout(() => { row._saved = false }, 1500)
+  const wasNew = !row.id
+  if (wasNew && data?.id) row.id = data.id
+  toast.success(wasNew ? 'Prinsip dibuat' : 'Prinsip diperbarui')
 }
 
-async function removeRow(row: PrincipleRow, index: number) {
-  if (!confirm(`Hapus prinsip "${row.title.id || '(tanpa judul)'}"?`)) return
+async function removeRow(row: PrincipleRow) {
+  const ok = await ask({
+    title: 'Hapus prinsip?',
+    message: `"${row.title.id || '(tanpa judul)'}" akan dihapus dari halaman /about.`,
+    confirmLabel: 'Hapus',
+    tone: 'danger',
+  })
+  if (!ok) return
 
-  if (!row.id) {
-    items.value.splice(index, 1)
-    return
+  const drop = () => {
+    const idx = items.value.indexOf(row)
+    if (idx !== -1) items.value.splice(idx, 1)
   }
 
+  if (!row.id) return drop()
+
   if (isPlaceholder) {
-    alert('Mode demo: tidak ada yang akan dihapus.')
+    toast.warning('Mode demo', 'Tidak ada yang dihapus.')
     return
   }
 
   const { error } = await supabase.from('studio_principles').delete().eq('id', row.id)
   if (error) {
     row._error = error.message
+    toast.error('Gagal menghapus', error.message)
     return
   }
-  items.value.splice(index, 1)
+  drop()
+  toast.success('Prinsip dihapus')
 }
 </script>
 
 <template>
-  <div class="px-8 py-10">
-    <header class="flex items-end justify-between mb-10">
-      <div>
-        <h1 class="font-display text-4xl tracking-tight">Prinsip studio</h1>
-        <p class="mt-2 text-sm text-[var(--color-muted)]">
-          {{ items.length }} prinsip · tampil di halaman /about
-        </p>
-      </div>
-      <button
-        type="button"
-        class="text-sm uppercase tracking-[0.2em] border border-white/40 hover:border-white px-5 py-2.5 transition-colors"
-        @click="addRow"
-      >
-        + Tambah
-      </button>
-    </header>
+  <div class="mx-auto max-w-[960px]">
+    <AdminPageHeader title="Prinsip studio" description="Nilai kerja yang tampil di halaman /about.">
+      <template #meta>
+        <span class="text-[var(--ad-fg-subtle)]">·</span>
+        <span>{{ items.length }} prinsip</span>
+      </template>
+      <template #actions>
+        <AdminButton variant="primary" icon="plus" @click="addRow">Tambah prinsip</AdminButton>
+      </template>
+    </AdminPageHeader>
 
-    <div v-if="status === 'loading'" class="text-sm text-[var(--color-muted)]">Memuat…</div>
-    <div v-else-if="status === 'error'" class="text-sm text-red-400">{{ errorMessage }}</div>
+    <div v-if="status === 'loading'" class="space-y-3">
+      <div v-for="i in 3" :key="i" class="ad-skeleton h-40 w-full" />
+    </div>
 
-    <div v-else-if="items.length" class="space-y-4">
-      <div
+    <div
+      v-else-if="status === 'error'"
+      class="ad-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
+    >
+      <AdminIcon name="alert" :size="15" class="mt-0.5" />
+      {{ errorMessage }}
+    </div>
+
+    <div v-else-if="items.length" class="space-y-3">
+      <AdminCard
         v-for="(row, i) in items"
         :key="row.id ?? `new-${i}`"
-        class="border border-white/10 p-5 space-y-4"
+        :title="row.title.id || `Prinsip ${String(i + 1).padStart(2, '0')}`"
       >
-        <div class="flex items-end justify-between gap-4">
-          <span class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)]">
-            #{{ String(i + 1).padStart(2, '0') }}
-          </span>
-          <label class="block w-24">
-            <span class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Urutan</span>
-            <input
-              v-model.number="row.sort_order"
-              type="number"
-              min="0"
-              class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm rounded-sm"
-            />
-          </label>
-        </div>
+        <template #actions>
+          <AdminField label="Urutan" class="w-20">
+            <input v-model.number="row.sort_order" type="number" min="0" class="ad-input ad-input-compact" />
+          </AdminField>
+        </template>
 
-        <AdminI18nField v-model="row.title" label="Judul" required placeholder="Berpikir / Think" />
-        <AdminI18nField
-          v-model="row.description"
-          label="Deskripsi"
-          type="textarea"
-          :rows="3"
-          placeholder="Kalimat ringkas yang menjelaskan prinsip ini"
-        />
+        <div class="space-y-5">
+          <AdminI18nField v-model="row.title" label="Judul" required placeholder="Berpikir / Think" />
+          <AdminI18nField
+            v-model="row.description"
+            label="Deskripsi"
+            type="textarea"
+            :rows="3"
+            placeholder="Kalimat ringkas yang menjelaskan prinsip ini"
+          />
 
-        <div class="flex items-center gap-3 pt-2 border-t border-white/5">
-          <button
-            type="button"
-            class="text-xs uppercase tracking-[0.2em] border border-white/40 hover:border-white px-4 py-2 transition-colors disabled:opacity-30"
-            :disabled="row._saving"
-            @click="saveRow(row)"
-          >
-            {{ row._saving ? 'Menyimpan…' : (row.id ? 'Simpan' : 'Buat') }}
-          </button>
-          <button
-            type="button"
-            class="text-xs uppercase tracking-[0.2em] border border-red-500/40 text-red-300 hover:bg-red-500/10 px-4 py-2 transition-colors"
-            @click="removeRow(row, i)"
-          >
-            Hapus
-          </button>
-          <span v-if="row._saved" class="text-xs text-emerald-300">Tersimpan ✓</span>
-          <span v-if="row._error" class="text-xs text-red-400">{{ row._error }}</span>
+          <div class="flex flex-wrap items-center gap-2.5 border-t border-[var(--ad-border)] pt-4">
+            <AdminButton
+              variant="primary"
+              size="sm"
+              icon="save"
+              :loading="row._saving"
+              @click="saveRow(row)"
+            >
+              {{ row.id ? 'Simpan' : 'Buat' }}
+            </AdminButton>
+            <AdminButton variant="danger" size="sm" icon="trash" @click="removeRow(row)">Hapus</AdminButton>
+            <p v-if="row._error" class="ad-error-text">{{ row._error }}</p>
+          </div>
         </div>
-      </div>
+      </AdminCard>
     </div>
 
-    <div v-else class="border border-white/10 px-8 py-16 text-center text-[var(--color-muted)]">
-      Belum ada prinsip. <button class="underline" @click="addRow">Tambah satu</button>.
-    </div>
-
-    <p v-if="isPlaceholder" class="mt-6 text-xs text-amber-300">
-      Mode demo: perubahan tidak akan tersimpan. Aktifkan Supabase di <code>.env</code>.
-    </p>
+    <AdminEmptyState
+      v-else
+      icon="compass"
+      title="Belum ada prinsip"
+      description="Prinsip studio mengisi bagian manifesto di halaman /about."
+    >
+      <AdminButton variant="primary" size="sm" icon="plus" @click="addRow">Tambah prinsip</AdminButton>
+    </AdminEmptyState>
   </div>
 </template>

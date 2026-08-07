@@ -57,7 +57,11 @@ onMounted(() => {
     )
     if (target && !target.hasAttribute('data-cursor-ignore')) {
       isHovering.value = true
-      label.value = target.dataset.cursorLabel ?? ''
+      const wanted = target.dataset.cursorLabel ?? ''
+      // A label that repeats the element's own text just prints the word a
+      // second time on top of the link. Only show labels that add something.
+      const own = (target.textContent ?? '').replace(/[()\s]+/g, '').toUpperCase()
+      label.value = own && own === wanted.replace(/\s+/g, '').toUpperCase() ? '' : wanted
     } else {
       isHovering.value = false
       label.value = ''

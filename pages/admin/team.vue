@@ -14,16 +14,18 @@ interface TeamRow {
   is_active: boolean
   sort_order: number
   _saving?: boolean
-  _saved?: boolean
   _error?: string
 }
 
 const supabase = useSupabaseClient()
 const { isPlaceholder } = useContentSource()
+const toast = useToast()
+const { ask } = useConfirm()
 
 const items = ref<TeamRow[]>([])
 const status = ref<'idle' | 'loading' | 'error'>('idle')
 const errorMessage = ref('')
+const search = ref('')
 
 const blankI18n = (): I18nField => ({ id: '', en: '' })
 
@@ -87,26 +89,36 @@ async function load() {
 
 await load()
 
+const activeCount = computed(() => items.value.filter(i => i.is_active).length)
+
+const filtered = computed(() => {
+  const q = search.value.trim().toLowerCase()
+  if (!q) return items.value
+  return items.value.filter(r =>
+    r.name.toLowerCase().includes(q) || r.role.id.toLowerCase().includes(q),
+  )
+})
+
 function addRow() {
   items.value.unshift(blankRow(items.value.length))
+  search.value = ''
 }
 
 async function saveRow(row: TeamRow) {
   if (isPlaceholder) {
-    alert('Mode demo: aktifkan Supabase di .env untuk menyimpan.')
+    toast.warning('Mode demo', 'Aktifkan Supabase di .env untuk menyimpan.')
     return
   }
   if (!row.name.trim()) {
     row._error = 'Nama wajib diisi.'
     return
   }
-  if (!row.role.id) {
+  if (!row.role.id.trim()) {
     row._error = 'Peran (ID) wajib diisi.'
     return
   }
 
   row._saving = true
-  row._saved = false
   row._error = ''
 
   const payload = {
@@ -129,153 +141,158 @@ async function saveRow(row: TeamRow) {
 
   if (error) {
     row._error = error.message
+    toast.error('Gagal menyimpan', error.message)
     return
   }
 
-  if (!row.id && data?.id) row.id = data.id
-  row._saved = true
-  setTimeout(() => { row._saved = false }, 1500)
+  const wasNew = !row.id
+  if (wasNew && data?.id) row.id = data.id
+  toast.success(wasNew ? `${row.name} ditambahkan` : `${row.name} diperbarui`)
 }
 
-async function removeRow(row: TeamRow, index: number) {
-  if (!confirm(`Hapus anggota "${row.name || '(tanpa nama)'}"?`)) return
+/** Splice by identity — `filtered` indexes don't line up with `items`. */
+function drop(row: TeamRow) {
+  const idx = items.value.indexOf(row)
+  if (idx !== -1) items.value.splice(idx, 1)
+}
+
+async function removeRow(row: TeamRow) {
+  const ok = await ask({
+    title: 'Hapus anggota tim?',
+    message: `"${row.name || '(tanpa nama)'}" akan dihapus dari halaman /about.`,
+    confirmLabel: 'Hapus',
+    tone: 'danger',
+  })
+  if (!ok) return
 
   if (!row.id) {
-    items.value.splice(index, 1)
+    drop(row)
     return
   }
 
   if (isPlaceholder) {
-    alert('Mode demo: tidak ada yang akan dihapus.')
+    toast.warning('Mode demo', 'Tidak ada yang dihapus.')
     return
   }
 
   const { error } = await supabase.from('team_members').delete().eq('id', row.id)
   if (error) {
     row._error = error.message
+    toast.error('Gagal menghapus', error.message)
     return
   }
-  items.value.splice(index, 1)
+  drop(row)
+  toast.success('Anggota dihapus')
 }
 </script>
 
 <template>
-  <div class="px-8 py-10">
-    <header class="flex items-end justify-between mb-10">
-      <div>
-        <h1 class="font-display text-4xl tracking-tight">Tim</h1>
-        <p class="mt-2 text-sm text-[var(--color-muted)]">
-          {{ items.length }} anggota · tampil di halaman /about
-        </p>
-      </div>
-      <button
-        type="button"
-        class="text-sm uppercase tracking-[0.2em] border border-white/40 hover:border-white px-5 py-2.5 transition-colors"
-        @click="addRow"
-      >
-        + Tambah anggota
-      </button>
-    </header>
+  <div class="mx-auto max-w-[1080px]">
+    <AdminPageHeader title="Tim" description="Anggota studio yang tampil di halaman /about.">
+      <template #meta>
+        <span class="text-[var(--ad-fg-subtle)]">·</span>
+        <span>{{ items.length }} anggota</span>
+        <span class="text-[var(--ad-fg-subtle)]">·</span>
+        <span>{{ activeCount }} aktif</span>
+      </template>
+      <template #actions>
+        <AdminButton variant="primary" icon="plus" @click="addRow">Tambah anggota</AdminButton>
+      </template>
+    </AdminPageHeader>
 
-    <div v-if="status === 'loading'" class="text-sm text-[var(--color-muted)]">Memuat…</div>
-    <div v-else-if="status === 'error'" class="text-sm text-red-400">{{ errorMessage }}</div>
+    <div v-if="items.length > 3" class="ad-input-group mb-4 max-w-xs">
+      <span class="ad-input-group-icon"><AdminIcon name="search" :size="15" /></span>
+      <input v-model="search" type="search" placeholder="Cari nama atau peran…" class="ad-input" />
+    </div>
 
-    <div v-else-if="items.length" class="space-y-6">
-      <article
-        v-for="(row, i) in items"
-        :key="row.id ?? `new-${i}`"
-        class="border border-white/10 p-6 grid lg:grid-cols-[260px_1fr] gap-6"
-      >
-        <div>
-          <ImageUpload
+    <div v-if="status === 'loading'" class="space-y-4">
+      <div v-for="i in 2" :key="i" class="ad-skeleton h-52 w-full" />
+    </div>
+
+    <div
+      v-else-if="status === 'error'"
+      class="ad-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
+    >
+      <AdminIcon name="alert" :size="15" class="mt-0.5" />
+      {{ errorMessage }}
+    </div>
+
+    <div v-else-if="filtered.length" class="space-y-4">
+      <AdminCard v-for="(row, i) in filtered" :key="row.id ?? `new-${i}`">
+        <template #actions>
+          <AdminBadge :tone="row.is_active ? 'success' : 'neutral'" dot>
+            {{ row.is_active ? 'Aktif' : 'Nonaktif' }}
+          </AdminBadge>
+        </template>
+
+        <div class="grid gap-6 lg:grid-cols-[240px_1fr]">
+          <AdminImageUpload
             v-model="row.photo_url"
             label="Foto"
             bucket="team-photos"
             aspect="aspect-[4/5]"
             hint="Rasio 4:5 disarankan."
           />
-        </div>
 
-        <div class="space-y-5">
-          <div class="grid md:grid-cols-[1fr_120px_auto] gap-4">
-            <label class="block">
-              <span class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Nama *</span>
-              <input
-                v-model="row.name"
-                type="text"
-                required
-                placeholder="Aditya Pratama"
-                class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm rounded-sm"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Urutan</span>
-              <input
-                v-model.number="row.sort_order"
-                type="number"
-                min="0"
-                class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm rounded-sm"
-              />
-            </label>
-            <label class="flex items-end gap-2 pb-2">
-              <input v-model="row.is_active" type="checkbox" />
-              <span class="text-sm">Aktif</span>
-            </label>
-          </div>
+          <div class="space-y-5">
+            <div class="grid gap-4 md:grid-cols-[1fr_110px]">
+              <AdminField label="Nama" required>
+                <input v-model="row.name" type="text" required placeholder="Aditya Pratama" class="ad-input" />
+              </AdminField>
+              <AdminField label="Urutan">
+                <input v-model.number="row.sort_order" type="number" min="0" class="ad-input" />
+              </AdminField>
+            </div>
 
-          <AdminI18nField v-model="row.role" label="Peran" required placeholder="Principal Architect" />
-          <AdminI18nField v-model="row.bio" label="Bio" type="textarea" :rows="3" />
+            <AdminI18nField v-model="row.role" label="Peran" required placeholder="Principal Architect" />
+            <AdminI18nField v-model="row.bio" label="Bio" type="textarea" :rows="3" />
 
-          <div class="grid md:grid-cols-2 gap-4">
-            <label class="block">
-              <span class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">LinkedIn URL</span>
-              <input
-                v-model="row.social_linkedin"
-                type="url"
-                placeholder="https://linkedin.com/in/…"
-                class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm rounded-sm"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Instagram URL</span>
-              <input
-                v-model="row.social_instagram"
-                type="url"
-                placeholder="https://instagram.com/…"
-                class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm rounded-sm"
-              />
-            </label>
-          </div>
+            <div class="grid gap-4 md:grid-cols-2">
+              <AdminField label="LinkedIn URL">
+                <input v-model="row.social_linkedin" type="url" placeholder="https://linkedin.com/in/…" class="ad-input" />
+              </AdminField>
+              <AdminField label="Instagram URL">
+                <input v-model="row.social_instagram" type="url" placeholder="https://instagram.com/…" class="ad-input" />
+              </AdminField>
+            </div>
 
-          <div class="flex items-center gap-3 pt-3 border-t border-white/5">
-            <button
-              type="button"
-              class="text-xs uppercase tracking-[0.2em] border border-white/40 hover:border-white px-4 py-2 transition-colors disabled:opacity-30"
-              :disabled="row._saving"
-              @click="saveRow(row)"
-            >
-              {{ row._saving ? 'Menyimpan…' : (row.id ? 'Simpan' : 'Buat') }}
-            </button>
-            <button
-              type="button"
-              class="text-xs uppercase tracking-[0.2em] border border-red-500/40 text-red-300 hover:bg-red-500/10 px-4 py-2 transition-colors"
-              @click="removeRow(row, i)"
-            >
-              Hapus
-            </button>
-            <span v-if="row._saved" class="text-xs text-emerald-300">Tersimpan ✓</span>
-            <span v-if="row._error" class="text-xs text-red-400">{{ row._error }}</span>
+            <label class="ad-switch-row">
+              <input v-model="row.is_active" type="checkbox" class="ad-check" />
+              <span class="text-[13px]">Tampilkan di halaman /about</span>
+            </label>
+
+            <div class="flex flex-wrap items-center gap-2.5 border-t border-[var(--ad-border)] pt-4">
+              <AdminButton
+                variant="primary"
+                size="sm"
+                icon="save"
+                :loading="row._saving"
+                @click="saveRow(row)"
+              >
+                {{ row.id ? 'Simpan' : 'Buat' }}
+              </AdminButton>
+              <AdminButton variant="danger" size="sm" icon="trash" @click="removeRow(row)">Hapus</AdminButton>
+              <p v-if="row._error" class="ad-error-text">{{ row._error }}</p>
+            </div>
           </div>
         </div>
-      </article>
+      </AdminCard>
     </div>
 
-    <div v-else class="border border-white/10 px-8 py-16 text-center text-[var(--color-muted)]">
-      Belum ada anggota tim. <button class="underline" @click="addRow">Tambah satu</button>.
-    </div>
+    <AdminEmptyState
+      v-else-if="search"
+      icon="search"
+      title="Tidak ada anggota yang cocok"
+      description="Coba kata kunci lain."
+    />
 
-    <p v-if="isPlaceholder" class="mt-6 text-xs text-amber-300">
-      Mode demo: perubahan tidak akan tersimpan. Aktifkan Supabase di <code>.env</code>.
-    </p>
+    <AdminEmptyState
+      v-else
+      icon="team"
+      title="Belum ada anggota tim"
+      description="Tambahkan profil arsitek dan staf agar halaman /about terisi."
+    >
+      <AdminButton variant="primary" size="sm" icon="plus" @click="addRow">Tambah anggota</AdminButton>
+    </AdminEmptyState>
   </div>
 </template>

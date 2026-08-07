@@ -16,31 +16,35 @@ const fromText = (s: string) => s.split('\n').map(l => l.trim()).filter(Boolean)
 function update(lang: 'id' | 'en', v: string) {
   model.value = { ...value.value, [lang]: fromText(v) }
 }
+
+const langs = [
+  { key: 'id' as const, label: 'ID' },
+  { key: 'en' as const, label: 'EN' },
+]
+
+const count = (lang: 'id' | 'en') => (value.value[lang] ?? []).length
 </script>
 
 <template>
-  <div class="space-y-2">
-    <label class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
-      {{ label }}
-    </label>
-    <p class="text-[10px] text-[var(--color-muted)]">Satu item per baris</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div>
-        <span class="block text-[10px] uppercase tracking-wide text-[var(--color-muted)] mb-1">ID</span>
+  <div>
+    <div class="mb-1.5 flex items-baseline justify-between gap-3">
+      <span class="ad-label ad-label-inline">{{ label }}</span>
+      <span class="text-[11px] text-[var(--ad-fg-subtle)]">Satu item per baris</span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <div v-for="lang in langs" :key="lang.key">
+        <div class="mb-1 flex items-center gap-1.5">
+          <span class="ad-eyebrow">{{ lang.label }}</span>
+          <span class="ml-auto text-[10px] tabular-nums text-[var(--ad-fg-subtle)]">
+            {{ count(lang.key) }} item
+          </span>
+        </div>
         <textarea
-          :value="toText(value.id)"
+          :value="toText(value[lang.key])"
           :rows="rows ?? 4"
-          class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm resize-y rounded-sm"
-          @input="update('id', ($event.target as HTMLTextAreaElement).value)"
-        />
-      </div>
-      <div>
-        <span class="block text-[10px] uppercase tracking-wide text-[var(--color-muted)] mb-1">EN</span>
-        <textarea
-          :value="toText(value.en)"
-          :rows="rows ?? 4"
-          class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm resize-y rounded-sm"
-          @input="update('en', ($event.target as HTMLTextAreaElement).value)"
+          class="ad-textarea"
+          @input="update(lang.key, ($event.target as HTMLTextAreaElement).value)"
         />
       </div>
     </div>

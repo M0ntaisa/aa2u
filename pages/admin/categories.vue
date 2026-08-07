@@ -9,12 +9,13 @@ interface CategoryRow {
   name: I18nField
   sort_order: number
   _saving?: boolean
-  _saved?: boolean
   _error?: string
 }
 
 const supabase = useSupabaseClient()
 const { isPlaceholder } = useContentSource()
+const toast = useToast()
+const { ask } = useConfirm()
 
 const items = ref<CategoryRow[]>([])
 const status = ref<'idle' | 'loading' | 'error'>('idle')
@@ -69,18 +70,31 @@ function addRow() {
   })
 }
 
+/** Auto-slug from the Indonesian name while the row is still new. */
+function syncSlug(row: CategoryRow) {
+  if (row.id || row.slug) return
+  row.slug = row.name.id
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
 async function saveRow(row: CategoryRow) {
   if (isPlaceholder) {
-    alert('Mode demo: aktifkan Supabase di .env untuk menyimpan.')
+    toast.warning('Mode demo', 'Aktifkan Supabase di .env untuk menyimpan.')
     return
   }
-  if (!row.slug || !row.name.id) {
+  if (!row.slug.trim() || !row.name.id.trim()) {
     row._error = 'Slug dan nama (ID) wajib diisi.'
+    return
+  }
+  if (!/^[a-z0-9-]+$/.test(row.slug)) {
+    row._error = 'Slug hanya boleh huruf kecil, angka, dan tanda hubung.'
     return
   }
 
   row._saving = true
-  row._saved = false
   row._error = ''
 
   const payload = {
@@ -97,114 +111,121 @@ async function saveRow(row: CategoryRow) {
   row._saving = false
 
   if (error) {
-    row._error = error.message
+    row._error = (error as any).code === '23505'
+      ? `Slug "${row.slug}" sudah dipakai kategori lain.`
+      : error.message
+    toast.error('Gagal menyimpan', row._error)
     return
   }
 
-  if (!row.id && data?.id) row.id = data.id
-  row._saved = true
-  setTimeout(() => { row._saved = false }, 1500)
+  const wasNew = !row.id
+  if (wasNew && data?.id) row.id = data.id
+  toast.success(wasNew ? 'Kategori dibuat' : 'Kategori diperbarui')
 }
 
-async function removeRow(row: CategoryRow, index: number) {
-  if (!confirm(`Hapus kategori "${row.name.id || row.slug}"?`)) return
+async function removeRow(row: CategoryRow) {
+  const ok = await ask({
+    title: 'Hapus kategori?',
+    message: `"${row.name.id || row.slug}" akan dihapus. Projek yang memakainya akan kehilangan kategori.`,
+    confirmLabel: 'Hapus',
+    tone: 'danger',
+  })
+  if (!ok) return
 
-  if (!row.id) {
-    items.value.splice(index, 1)
-    return
+  const drop = () => {
+    const idx = items.value.indexOf(row)
+    if (idx !== -1) items.value.splice(idx, 1)
   }
 
+  if (!row.id) return drop()
+
   if (isPlaceholder) {
-    alert('Mode demo: tidak ada yang akan dihapus.')
+    toast.warning('Mode demo', 'Tidak ada yang dihapus.')
     return
   }
 
   const { error } = await supabase.from('categories').delete().eq('id', row.id)
   if (error) {
     row._error = error.message
+    toast.error('Gagal menghapus', error.message)
     return
   }
-  items.value.splice(index, 1)
+  drop()
+  toast.success('Kategori dihapus')
 }
 </script>
 
 <template>
-  <div class="px-8 py-10">
-    <header class="flex items-end justify-between mb-10">
-      <div>
-        <h1 class="font-display text-4xl tracking-tight">Kategori</h1>
-        <p class="mt-2 text-sm text-[var(--color-muted)]">
-          {{ items.length }} kategori · digunakan untuk grouping projek
-        </p>
-      </div>
-      <button
-        type="button"
-        class="text-sm uppercase tracking-[0.2em] border border-white/40 hover:border-white px-5 py-2.5 transition-colors"
-        @click="addRow"
-      >
-        + Tambah
-      </button>
-    </header>
+  <div class="mx-auto max-w-[960px]">
+    <AdminPageHeader title="Kategori" description="Dipakai untuk grouping projek dan filter di halaman /work.">
+      <template #meta>
+        <span class="text-[var(--ad-fg-subtle)]">·</span>
+        <span>{{ items.length }} kategori</span>
+      </template>
+      <template #actions>
+        <AdminButton variant="primary" icon="plus" @click="addRow">Tambah kategori</AdminButton>
+      </template>
+    </AdminPageHeader>
 
-    <div v-if="status === 'loading'" class="text-sm text-[var(--color-muted)]">Memuat…</div>
-    <div v-else-if="status === 'error'" class="text-sm text-red-400">{{ errorMessage }}</div>
+    <div v-if="status === 'loading'" class="space-y-3">
+      <div v-for="i in 3" :key="i" class="ad-skeleton h-24 w-full" />
+    </div>
 
-    <div v-else-if="items.length" class="space-y-4">
-      <div
-        v-for="(row, i) in items"
-        :key="row.id ?? `new-${i}`"
-        class="border border-white/10 p-5 grid md:grid-cols-[120px_1fr_auto] gap-4 items-start"
-      >
-        <label class="block">
-          <span class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Slug *</span>
-          <input
-            v-model="row.slug"
-            type="text"
-            pattern="[a-z0-9-]+"
-            placeholder="residensial"
-            class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm rounded-sm"
-          />
-          <label class="mt-3 block">
-            <span class="block text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Urutan</span>
-            <input
-              v-model.number="row.sort_order"
-              type="number"
-              min="0"
-              class="w-full bg-white/5 border border-white/10 px-3 py-2 focus:border-white/40 outline-none text-sm rounded-sm"
-            />
-          </label>
-        </label>
+    <div
+      v-else-if="status === 'error'"
+      class="ad-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
+    >
+      <AdminIcon name="alert" :size="15" class="mt-0.5" />
+      {{ errorMessage }}
+    </div>
 
-        <AdminI18nField v-model="row.name" label="Nama" required placeholder="Residensial / Residential" />
+    <div v-else-if="items.length" class="space-y-3">
+      <AdminCard v-for="(row, i) in items" :key="row.id ?? `new-${i}`">
+        <div class="grid gap-4 lg:grid-cols-[150px_1fr_auto]">
+          <div class="space-y-4">
+            <AdminField label="Slug" required>
+              <input
+                v-model="row.slug"
+                type="text"
+                pattern="[a-z0-9-]+"
+                placeholder="residensial"
+                class="ad-input"
+              />
+            </AdminField>
+            <AdminField label="Urutan">
+              <input v-model.number="row.sort_order" type="number" min="0" class="ad-input" />
+            </AdminField>
+          </div>
 
-        <div class="flex flex-col gap-2 items-stretch">
-          <button
-            type="button"
-            class="text-xs uppercase tracking-[0.2em] border border-white/40 hover:border-white px-4 py-2 transition-colors disabled:opacity-30"
-            :disabled="row._saving"
-            @click="saveRow(row)"
-          >
-            {{ row._saving ? 'Menyimpan…' : (row.id ? 'Simpan' : 'Buat') }}
-          </button>
-          <button
-            type="button"
-            class="text-xs uppercase tracking-[0.2em] border border-red-500/40 text-red-300 hover:bg-red-500/10 px-4 py-2 transition-colors"
-            @click="removeRow(row, i)"
-          >
-            Hapus
-          </button>
-          <span v-if="row._saved" class="text-xs text-emerald-300 text-center">Tersimpan ✓</span>
-          <span v-if="row._error" class="text-xs text-red-400">{{ row._error }}</span>
+          <div @blur.capture="syncSlug(row)">
+            <AdminI18nField v-model="row.name" label="Nama" required placeholder="Residensial / Residential" />
+          </div>
+
+          <div class="flex flex-row gap-2 lg:w-32 lg:flex-col">
+            <AdminButton
+              variant="primary"
+              size="sm"
+              icon="save"
+              :loading="row._saving"
+              @click="saveRow(row)"
+            >
+              {{ row.id ? 'Simpan' : 'Buat' }}
+            </AdminButton>
+            <AdminButton variant="danger" size="sm" icon="trash" @click="removeRow(row)">Hapus</AdminButton>
+          </div>
         </div>
-      </div>
+
+        <p v-if="row._error" class="ad-error-text mt-3">{{ row._error }}</p>
+      </AdminCard>
     </div>
 
-    <div v-else class="border border-white/10 px-8 py-16 text-center text-[var(--color-muted)]">
-      Belum ada kategori. <button class="underline" @click="addRow">Tambah satu</button>.
-    </div>
-
-    <p v-if="isPlaceholder" class="mt-6 text-xs text-amber-300">
-      Mode demo: perubahan tidak akan tersimpan. Aktifkan Supabase di <code>.env</code>.
-    </p>
+    <AdminEmptyState
+      v-else
+      icon="tag"
+      title="Belum ada kategori"
+      description="Kategori mengelompokkan projek dan mengisi filter di halaman /work."
+    >
+      <AdminButton variant="primary" size="sm" icon="plus" @click="addRow">Tambah kategori</AdminButton>
+    </AdminEmptyState>
   </div>
 </template>

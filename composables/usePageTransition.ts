@@ -14,13 +14,30 @@
 const LEAVE_DURATION = 0.35
 const ENTER_DURATION = 0.55
 
+// The admin panel is a working surface, not a showcase: a ~0.9s crossfade
+// between list and form pages reads as lag. Keep a short fade there instead.
+const ADMIN_LEAVE_DURATION = 0.1
+const ADMIN_ENTER_DURATION = 0.16
+
 export const usePageTransition = () => {
   const { isActive: flipIsActive } = useSharedFlip()
+  const route = useRoute()
+  const isAdmin = () => route.path.includes('/admin')
 
   function onLeave(el: Element, done: () => void) {
     const { $gsap } = useNuxtApp() as any
     if (!$gsap) return done()
     if (prefersReducedMotion()) return done()
+
+    if (isAdmin()) {
+      $gsap.to(el, {
+        opacity: 0,
+        duration: ADMIN_LEAVE_DURATION,
+        ease: 'none',
+        onComplete: done,
+      })
+      return
+    }
 
     if (flipIsActive.value) {
       $gsap.to(el, {
@@ -45,6 +62,17 @@ export const usePageTransition = () => {
     const { $gsap } = useNuxtApp() as any
     if (!$gsap) return done()
     if (prefersReducedMotion()) return done()
+
+    if (isAdmin()) {
+      $gsap.set(el, { opacity: 0, y: 0 })
+      $gsap.to(el, {
+        opacity: 1,
+        duration: ADMIN_ENTER_DURATION,
+        ease: 'power1.out',
+        onComplete: done,
+      })
+      return
+    }
 
     if (flipIsActive.value) {
       // Flip morph plays from t=0 on the destination element. If we fade

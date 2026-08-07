@@ -122,7 +122,6 @@ watch(() => route.fullPath, () => closeMenu())
             <button
               class="lang-btn"
               :class="locale === l ? 'text-white' : 'text-white/40 hover:text-white/70'"
-              :data-cursor-label="l.toUpperCase()"
               :aria-label="`Switch to ${l === 'en' ? 'English' : 'Bahasa Indonesia'}`"
               :aria-current="locale === l ? 'true' : undefined"
               @click="setLocale(l)"
@@ -146,7 +145,6 @@ watch(() => route.fullPath, () => closeMenu())
             :key="p.key"
             :to="localePath(p.path)"
             class="nav-item"
-            :data-cursor-label="t(`nav.${p.key}`)"
           >
             <span class="paren paren-l" aria-hidden="true">(</span>
             <span class="nav-label">{{ t(`nav.${p.key}`) }}</span>

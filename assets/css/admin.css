@@ -1,0 +1,669 @@
+/* ---------------------------------------------------------------------------
+   Admin design system
+   ---------------------------------------------------------------------------
+   Scoped to the /admin area. The public site keeps its editorial, square-edged
+   look; the admin panel gets a denser, more utilitarian surface language:
+   elevated panels, consistent 6/8px radii, one control height, and a single
+   accent for primary actions.
+
+   Everything here is plain CSS (no @apply) so class ordering never depends on
+   Tailwind's layer resolution. Tokens are namespaced `--ad-*`.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* Surfaces */
+  --ad-canvas:        #14151d;
+  --ad-surface:       #1b1d27;
+  --ad-surface-hover: #21232f;
+  --ad-surface-sunk:  #101118;
+
+  /* Lines */
+  --ad-border:        rgba(255, 255, 255, 0.08);
+  --ad-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --ad-fg:            #e7e9f2;
+  --ad-fg-muted:      #8b90a6;
+  --ad-fg-subtle:     #676c80;
+
+  /* Semantics */
+  --ad-accent:        #7aa2f7;
+  --ad-accent-hover:  #8fb3ff;
+  --ad-accent-fg:     #0d1017;
+  --ad-success:       #82d9a5;
+  --ad-warning:       #e0af68;
+  --ad-danger:        #f7768e;
+
+  /* Geometry */
+  --ad-radius:        8px;
+  --ad-radius-sm:     6px;
+  --ad-control-h:     38px;
+
+  --ad-shadow-panel:  0 1px 2px rgba(0, 0, 0, 0.32);
+  --ad-shadow-pop:    0 16px 48px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* The admin area uses the OS cursor — the site-wide CustomCursor hides it,
+   which is fine for a portfolio but hostile in a data-entry UI. */
+html.admin-area,
+html.admin-area * {
+  cursor: revert !important;
+}
+
+/* --------------------------------------------------------------------- *
+ * Typography helpers
+ * --------------------------------------------------------------------- */
+
+.ad-eyebrow {
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ad-fg-subtle);
+  font-weight: 500;
+}
+
+.ad-label {
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--ad-fg-muted);
+  margin-bottom: 6px;
+}
+
+/* For labels that sit in a row which already owns the spacing. */
+.ad-label-inline { margin-bottom: 0; }
+
+.ad-label-req::after {
+  content: '*';
+  color: var(--ad-danger);
+  margin-left: 4px;
+}
+
+.ad-hint {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ad-fg-subtle);
+  margin-top: 6px;
+}
+
+.ad-error-text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ad-danger);
+}
+
+/* --------------------------------------------------------------------- *
+ * Panels
+ * --------------------------------------------------------------------- */
+
+.ad-panel {
+  background: var(--ad-surface);
+  border: 1px solid var(--ad-border);
+  border-radius: var(--ad-radius);
+  box-shadow: var(--ad-shadow-panel);
+}
+
+.ad-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--ad-border);
+}
+
+.ad-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ad-fg);
+}
+
+.ad-panel-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ad-fg-subtle);
+  margin-top: 3px;
+}
+
+.ad-panel-body {
+  padding: 20px;
+}
+
+.ad-panel-foot {
+  padding: 14px 20px;
+  border-top: 1px solid var(--ad-border);
+  background: rgba(0, 0, 0, 0.14);
+  border-radius: 0 0 var(--ad-radius) var(--ad-radius);
+}
+
+/* --------------------------------------------------------------------- *
+ * Form controls
+ * --------------------------------------------------------------------- */
+
+.ad-input,
+.ad-select,
+.ad-textarea {
+  width: 100%;
+  background: var(--ad-surface-sunk);
+  border: 1px solid var(--ad-border);
+  border-radius: var(--ad-radius-sm);
+  color: var(--ad-fg);
+  font-size: 13.5px;
+  line-height: 1.5;
+  padding: 0 12px;
+  height: var(--ad-control-h);
+  transition: border-color 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+  outline: none;
+}
+
+.ad-textarea {
+  height: auto;
+  padding: 9px 12px;
+  resize: vertical;
+  min-height: 76px;
+}
+
+.ad-input::placeholder,
+.ad-textarea::placeholder {
+  color: var(--ad-fg-subtle);
+  opacity: 0.7;
+}
+
+.ad-input:hover,
+.ad-select:hover,
+.ad-textarea:hover {
+  border-color: var(--ad-border-strong);
+}
+
+.ad-input:focus,
+.ad-select:focus,
+.ad-textarea:focus {
+  border-color: var(--ad-accent);
+  box-shadow: 0 0 0 3px rgba(122, 162, 247, 0.16);
+  background: var(--ad-surface-sunk);
+}
+
+.ad-input:disabled,
+.ad-select:disabled,
+.ad-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Room for a trailing button inside the field (password reveal, clear, …).
+   Needed because .ad-input's padding shorthand outranks a Tailwind pr-* class. */
+.ad-input-action { padding-right: 38px; }
+
+/* Compact variant for controls that sit inside a panel header. */
+.ad-input-compact {
+  height: 30px;
+  font-size: 12.5px;
+  padding: 0 8px;
+}
+
+.ad-input-invalid,
+.ad-input-invalid:focus {
+  border-color: var(--ad-danger);
+  box-shadow: 0 0 0 3px rgba(247, 118, 142, 0.15);
+}
+
+/* Native select chevron */
+.ad-select {
+  appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b90a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+}
+
+.ad-select option {
+  background: var(--ad-surface);
+  color: var(--ad-fg);
+}
+
+/* Input with a leading icon */
+.ad-input-group {
+  position: relative;
+}
+
+.ad-input-group .ad-input {
+  padding-left: 36px;
+}
+
+.ad-input-group-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ad-fg-subtle);
+  pointer-events: none;
+  display: flex;
+}
+
+/* Checkbox / switch */
+.ad-check {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border: 1px solid var(--ad-border-strong);
+  border-radius: 4px;
+  background: var(--ad-surface-sunk);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.14s ease, border-color 0.14s ease;
+}
+
+.ad-check:checked {
+  background: var(--ad-accent);
+  border-color: var(--ad-accent);
+}
+
+.ad-check:checked::after {
+  content: '';
+  position: absolute;
+  left: 4.5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--ad-accent-fg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.ad-check:focus-visible {
+  outline: 2px solid var(--ad-accent);
+  outline-offset: 2px;
+}
+
+.ad-switch-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------- *
+ * Buttons
+ * --------------------------------------------------------------------- */
+
+.ad-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: var(--ad-control-h);
+  padding: 0 14px;
+  border-radius: var(--ad-radius-sm);
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, opacity 0.14s ease;
+}
+
+.ad-btn:disabled,
+.ad-btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ad-btn-primary {
+  background: var(--ad-accent);
+  color: var(--ad-accent-fg);
+  font-weight: 600;
+}
+.ad-btn-primary:not(:disabled):hover { background: var(--ad-accent-hover); }
+
+.ad-btn-secondary {
+  background: var(--ad-surface-hover);
+  border-color: var(--ad-border-strong);
+  color: var(--ad-fg);
+}
+.ad-btn-secondary:not(:disabled):hover {
+  background: #282a38;
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.ad-btn-ghost {
+  background: transparent;
+  color: var(--ad-fg-muted);
+}
+.ad-btn-ghost:not(:disabled):hover {
+  background: var(--ad-surface-hover);
+  color: var(--ad-fg);
+}
+
+.ad-btn-danger {
+  background: transparent;
+  border-color: rgba(247, 118, 142, 0.35);
+  color: var(--ad-danger);
+}
+.ad-btn-danger:not(:disabled):hover {
+  background: rgba(247, 118, 142, 0.12);
+  border-color: rgba(247, 118, 142, 0.6);
+}
+
+.ad-btn-danger-solid {
+  background: var(--ad-danger);
+  color: #1a0d11;
+  font-weight: 600;
+}
+.ad-btn-danger-solid:not(:disabled):hover { background: #ff8ba1; }
+
+.ad-btn-sm {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+  gap: 5px;
+}
+
+.ad-btn-icon {
+  width: var(--ad-control-h);
+  padding: 0;
+}
+
+.ad-btn-icon.ad-btn-sm {
+  width: 30px;
+}
+
+/* --------------------------------------------------------------------- *
+ * Badges & chips
+ * --------------------------------------------------------------------- */
+
+.ad-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.ad-badge-neutral {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--ad-border);
+  color: var(--ad-fg-muted);
+}
+.ad-badge-success {
+  background: rgba(130, 217, 165, 0.12);
+  border-color: rgba(130, 217, 165, 0.28);
+  color: var(--ad-success);
+}
+.ad-badge-warning {
+  background: rgba(224, 175, 104, 0.12);
+  border-color: rgba(224, 175, 104, 0.28);
+  color: var(--ad-warning);
+}
+.ad-badge-danger {
+  background: rgba(247, 118, 142, 0.12);
+  border-color: rgba(247, 118, 142, 0.28);
+  color: var(--ad-danger);
+}
+.ad-badge-accent {
+  background: rgba(122, 162, 247, 0.14);
+  border-color: rgba(122, 162, 247, 0.3);
+  color: var(--ad-accent);
+}
+
+.ad-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+/* Segmented control */
+.ad-seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--ad-surface-sunk);
+  border: 1px solid var(--ad-border);
+  border-radius: var(--ad-radius-sm);
+}
+
+.ad-seg-item {
+  padding: 0 12px;
+  height: 30px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ad-fg-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+.ad-seg-item:hover { color: var(--ad-fg); }
+.ad-seg-item[aria-pressed='true'] {
+  background: var(--ad-surface-hover);
+  color: var(--ad-fg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* --------------------------------------------------------------------- *
+ * Tables
+ * --------------------------------------------------------------------- */
+
+.ad-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13.5px;
+}
+
+.ad-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #191b24;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ad-fg-subtle);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--ad-border);
+  white-space: nowrap;
+}
+
+.ad-table tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.ad-table tbody tr:last-child td { border-bottom: 0; }
+.ad-table tbody tr { transition: background 0.12s ease; }
+.ad-table tbody tr:hover { background: rgba(255, 255, 255, 0.032); }
+
+.ad-table-num {
+  font-variant-numeric: tabular-nums;
+  color: var(--ad-fg-subtle);
+}
+
+/* --------------------------------------------------------------------- *
+ * Sidebar navigation
+ * --------------------------------------------------------------------- */
+
+.ad-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  height: 34px;
+  border-radius: var(--ad-radius-sm);
+  font-size: 13.5px;
+  color: var(--ad-fg-muted);
+  transition: background 0.12s ease, color 0.12s ease;
+  position: relative;
+}
+
+.ad-nav-item:hover {
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--ad-fg);
+}
+
+.ad-nav-item[data-active='true'] {
+  background: rgba(122, 162, 247, 0.12);
+  color: #cddafd;
+  font-weight: 500;
+}
+
+.ad-nav-item[data-active='true']::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--ad-accent);
+}
+
+/* --------------------------------------------------------------------- *
+ * Scrollbars (admin only — the public site keeps the OS default)
+ * --------------------------------------------------------------------- */
+
+.ad-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+.ad-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.ad-scroll::-webkit-scrollbar-track { background: transparent; }
+.ad-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.ad-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.22); }
+
+/* --------------------------------------------------------------------- *
+ * Overlays: toasts + dialog
+ * --------------------------------------------------------------------- */
+
+.ad-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 260px;
+  max-width: 380px;
+  padding: 11px 13px;
+  border-radius: var(--ad-radius);
+  background: #22242f;
+  border: 1px solid var(--ad-border-strong);
+  box-shadow: var(--ad-shadow-pop);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ad-fg);
+}
+
+.ad-toast-success { border-left: 3px solid var(--ad-success); }
+.ad-toast-error   { border-left: 3px solid var(--ad-danger); }
+.ad-toast-info    { border-left: 3px solid var(--ad-accent); }
+.ad-toast-warning { border-left: 3px solid var(--ad-warning); }
+
+.ad-toast-enter-active,
+.ad-toast-leave-active { transition: all 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
+.ad-toast-enter-from   { opacity: 0; transform: translateX(16px) scale(0.97); }
+.ad-toast-leave-to     { opacity: 0; transform: translateX(16px) scale(0.97); }
+.ad-toast-move         { transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
+
+.ad-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 9, 13, 0.7);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.ad-dialog {
+  width: 100%;
+  max-width: 420px;
+  background: var(--ad-surface);
+  border: 1px solid var(--ad-border-strong);
+  border-radius: 12px;
+  box-shadow: var(--ad-shadow-pop);
+  padding: 22px;
+}
+
+.ad-fade-enter-active,
+.ad-fade-leave-active { transition: opacity 0.16s ease; }
+.ad-fade-enter-from,
+.ad-fade-leave-to     { opacity: 0; }
+
+.ad-pop-enter-active { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.ad-pop-leave-active { transition: all 0.14s ease-in; }
+.ad-pop-enter-from,
+.ad-pop-leave-to     { opacity: 0; transform: scale(0.96) translateY(6px); }
+
+/* --------------------------------------------------------------------- *
+ * Misc
+ * --------------------------------------------------------------------- */
+
+.ad-divider {
+  height: 1px;
+  background: var(--ad-border);
+  border: 0;
+}
+
+.ad-kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--ad-border-strong);
+  border-bottom-width: 2px;
+  background: var(--ad-surface-sunk);
+  font-size: 10.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ad-fg-muted);
+  line-height: 15px;
+}
+
+.ad-spin {
+  animation: ad-spin 0.7s linear infinite;
+}
+@keyframes ad-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ad-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  );
+  background-size: 400% 100%;
+  animation: ad-shimmer 1.4s ease infinite;
+  border-radius: 4px;
+}
+@keyframes ad-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-spin,
+  .ad-skeleton { animation: none; }
+}

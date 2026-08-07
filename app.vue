@@ -4,6 +4,12 @@ const i18nHead = useLocaleHead({ seo: true, dir: false })
 const config = useRuntimeConfig()
 const siteUrl = (config.public as any).siteUrl as string
 
+// The admin panel opts out of the site's showpiece behaviours: the custom
+// cursor hides the OS pointer (hostile in a data-entry UI) and the long page
+// transition makes navigation feel sluggish when you're just editing rows.
+const route = useRoute()
+const isAdmin = computed(() => route.path.includes('/admin'))
+
 const websiteJsonLd = computed(() => JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -34,6 +40,7 @@ const earlyBootstrap = `
 useHead({
   htmlAttrs: {
     lang: () => i18nHead.value.htmlAttrs?.lang ?? locale.value,
+    class: () => (isAdmin.value ? 'admin-area' : ''),
   },
   link: () => i18nHead.value.link ?? [],
   meta: () => i18nHead.value.meta ?? [],
@@ -64,6 +71,6 @@ const { onLeave, onEnter } = usePageTransition()
   </NuxtLayout>
 
   <ClientOnly>
-    <CustomCursor />
+    <CustomCursor v-if="!isAdmin" />
   </ClientOnly>
 </template>

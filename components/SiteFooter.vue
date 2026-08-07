@@ -127,7 +127,6 @@ const currentYear = new Date().getFullYear()
                 <NuxtLink
                   :to="localePath(link.path)"
                   class="footer-nav-link"
-                  :data-cursor-label="t(`nav.${link.key}`)"
                 >
                   {{ t(`nav.${link.key}`) }}
                 </NuxtLink>
@@ -141,7 +140,6 @@ const currentYear = new Date().getFullYear()
                 target="_blank"
                 rel="noopener"
                 class="footer-nav-link"
-                :data-cursor-label="s.label.slice(0, 2).toUpperCase()"
               >
                 {{ s.label }}
               </a>
