@@ -28,14 +28,14 @@ const count = (lang: 'id' | 'en') => (value.value[lang] ?? []).length
 <template>
   <div>
     <div class="mb-1.5 flex items-baseline justify-between gap-3">
-      <span class="ad-label ad-label-inline">{{ label }}</span>
+      <span class="cms-label cms-label-inline">{{ label }}</span>
       <span class="text-[11px] text-[var(--ad-fg-subtle)]">Satu item per baris</span>
     </div>
 
     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
       <div v-for="lang in langs" :key="lang.key">
         <div class="mb-1 flex items-center gap-1.5">
-          <span class="ad-eyebrow">{{ lang.label }}</span>
+          <span class="cms-eyebrow">{{ lang.label }}</span>
           <span class="ml-auto text-[10px] tabular-nums text-[var(--ad-fg-subtle)]">
             {{ count(lang.key) }} item
           </span>
@@ -43,7 +43,7 @@ const count = (lang: 'id' | 'en') => (value.value[lang] ?? []).length
         <textarea
           :value="toText(value[lang.key])"
           :rows="rows ?? 4"
-          class="ad-textarea"
+          class="cms-textarea"
           @input="update(lang.key, ($event.target as HTMLTextAreaElement).value)"
         />
       </div>

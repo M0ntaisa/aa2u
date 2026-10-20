@@ -22,18 +22,18 @@ const props = withDefaults(defineProps<{
 })
 
 const variantClass: Record<NonNullable<typeof props.variant>, string> = {
-  primary: 'ad-btn-primary',
-  secondary: 'ad-btn-secondary',
-  ghost: 'ad-btn-ghost',
-  danger: 'ad-btn-danger',
-  dangerSolid: 'ad-btn-danger-solid',
+  primary: 'cms-btn-primary',
+  secondary: 'cms-btn-secondary',
+  ghost: 'cms-btn-ghost',
+  danger: 'cms-btn-danger',
+  dangerSolid: 'cms-btn-danger-solid',
 }
 
 const classes = computed(() => [
-  'ad-btn',
+  'cms-btn',
   variantClass[props.variant],
-  props.size === 'sm' ? 'ad-btn-sm' : '',
-  props.iconOnly ? 'ad-btn-icon' : '',
+  props.size === 'sm' ? 'cms-btn-sm' : '',
+  props.iconOnly ? 'cms-btn-icon' : '',
 ])
 
 const iconSize = computed(() => (props.size === 'sm' ? 14 : 16))
@@ -53,7 +53,7 @@ const tag = computed(() => (props.to ? NuxtLink : props.href ? 'a' : 'button'))
     :title="iconOnly ? label : undefined"
     :class="classes"
   >
-    <AdminIcon v-if="loading" name="loader" :size="iconSize" class="ad-spin" />
+    <AdminIcon v-if="loading" name="loader" :size="iconSize" class="cms-spin" />
     <AdminIcon v-else-if="icon" :name="icon" :size="iconSize" />
     <span v-if="!iconOnly"><slot>{{ label }}</slot></span>
     <AdminIcon v-if="iconRight && !loading" :name="iconRight" :size="iconSize" />

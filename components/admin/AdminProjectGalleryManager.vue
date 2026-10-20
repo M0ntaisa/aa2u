@@ -234,7 +234,7 @@ const { dragIndex, dropIndex, busy: reordering, onDragStart, onDragOver, onDragE
       />
 
       <div v-if="status === 'loading'" class="mt-5 space-y-3">
-        <div v-for="i in 2" :key="i" class="ad-skeleton h-40 w-full" />
+        <div v-for="i in 2" :key="i" class="cms-skeleton h-40 w-full" />
       </div>
 
       <ul v-else-if="items.length" class="mt-6 space-y-3">
@@ -280,7 +280,7 @@ const { dragIndex, dropIndex, busy: reordering, onDragStart, onDragOver, onDragE
             </p>
 
             <div class="flex items-center gap-1">
-              <span class="ad-eyebrow flex items-center gap-1">
+              <span class="cms-eyebrow flex items-center gap-1">
                 <AdminIcon name="grip" :size="12" />
                 #{{ String(i + 1).padStart(2, '0') }}
               </span>
@@ -329,12 +329,12 @@ const { dragIndex, dropIndex, busy: reordering, onDragStart, onDragOver, onDragE
 
             <div class="grid gap-4 md:grid-cols-2">
               <AdminField label="Bab" hint="Bagian dossier tempat gambar tampil.">
-                <select v-model="item.chapter" class="ad-select">
+                <select v-model="item.chapter" class="cms-select">
                   <option v-for="c in CHAPTERS" :key="c" :value="c">{{ chapterLabels[c] }}</option>
                 </select>
               </AdminField>
               <AdminField label="Layout" hint="Otomatis: lebar/portrait/pasangan dipilih dari ukuran gambar.">
-                <select v-model="item.layout" class="ad-select">
+                <select v-model="item.layout" class="cms-select">
                   <option v-for="l in IMAGE_LAYOUTS" :key="l" :value="l">{{ layoutLabels[l] }}</option>
                 </select>
               </AdminField>
@@ -351,7 +351,7 @@ const { dragIndex, dropIndex, busy: reordering, onDragStart, onDragOver, onDragE
                 Simpan
               </AdminButton>
               <AdminButton variant="danger" size="sm" icon="trash" @click="removeItem(item)">Hapus</AdminButton>
-              <p v-if="item._error" class="ad-error-text">{{ item._error }}</p>
+              <p v-if="item._error" class="cms-error-text">{{ item._error }}</p>
             </div>
           </div>
         </li>
@@ -361,7 +361,7 @@ const { dragIndex, dropIndex, busy: reordering, onDragStart, onDragOver, onDragE
         Belum ada gambar di gallery.
       </p>
 
-      <p v-if="errorMessage" class="ad-error-text mt-4">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="cms-error-text mt-4">{{ errorMessage }}</p>
     </template>
   </AdminCard>
 </template>

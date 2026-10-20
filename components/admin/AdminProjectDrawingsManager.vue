@@ -245,7 +245,7 @@ async function removeItem(item: DrawingItem) {
       />
 
       <div v-if="status === 'loading'" class="mt-5 space-y-3">
-        <div v-for="i in 2" :key="i" class="ad-skeleton h-40 w-full" />
+        <div v-for="i in 2" :key="i" class="cms-skeleton h-40 w-full" />
       </div>
 
       <ul v-else-if="items.length" class="mt-6 space-y-3">
@@ -277,7 +277,7 @@ async function removeItem(item: DrawingItem) {
               />
             </div>
             <div class="flex items-center gap-1">
-              <span class="ad-eyebrow flex items-center gap-1">
+              <span class="cms-eyebrow flex items-center gap-1">
                 <AdminIcon name="grip" :size="12" />
                 #{{ String(i + 1).padStart(2, '0') }}
               </span>
@@ -286,8 +286,8 @@ async function removeItem(item: DrawingItem) {
                 <AdminButton variant="ghost" size="sm" icon-only icon="chevronDown" label="Turunkan urutan" :disabled="reordering || i === items.length - 1" @click="move(i, 1)" />
               </div>
             </div>
-            <label class="ad-switch-row text-[12.5px]">
-              <input v-model="item.invert" type="checkbox" class="ad-check" />
+            <label class="cms-switch-row text-[12.5px]">
+              <input v-model="item.invert" type="checkbox" class="cms-check" />
               Invert (CAD hitam-di-putih)
             </label>
           </div>
@@ -295,21 +295,21 @@ async function removeItem(item: DrawingItem) {
           <div class="space-y-4">
             <div class="grid gap-4 md:grid-cols-2">
               <AdminField label="Jenis">
-                <select v-model="item.kind" class="ad-select">
+                <select v-model="item.kind" class="cms-select">
                   <option v-for="k in DRAWING_KINDS" :key="k" :value="k">{{ kindLabels[k] }}</option>
                 </select>
               </AdminField>
               <AdminField label="Bab">
-                <select v-model="item.chapter" class="ad-select">
+                <select v-model="item.chapter" class="cms-select">
                   <option value="">Otomatis ({{ chapterLabels[defaultDrawingChapter(item.kind)] }})</option>
                   <option v-for="c in CHAPTERS" :key="c" :value="c">{{ chapterLabels[c] }}</option>
                 </select>
               </AdminField>
               <AdminField label="Skala" hint="Hanya tampilan, mis. 1:200.">
-                <input v-model="item.scale" type="text" maxlength="40" placeholder="1:200" class="ad-input" />
+                <input v-model="item.scale" type="text" maxlength="40" placeholder="1:200" class="cms-input" />
               </AdminField>
               <AdminField label="Level" hint="Mis. Level 1 atau +3.20.">
-                <input v-model="item.level" type="text" maxlength="40" placeholder="Level 1" class="ad-input" />
+                <input v-model="item.level" type="text" maxlength="40" placeholder="Level 1" class="cms-input" />
               </AdminField>
             </div>
 
@@ -321,7 +321,7 @@ async function removeItem(item: DrawingItem) {
                 Simpan
               </AdminButton>
               <AdminButton variant="danger" size="sm" icon="trash" @click="removeItem(item)">Hapus</AdminButton>
-              <p v-if="item._error" class="ad-error-text">{{ item._error }}</p>
+              <p v-if="item._error" class="cms-error-text">{{ item._error }}</p>
             </div>
           </div>
         </li>
@@ -329,7 +329,7 @@ async function removeItem(item: DrawingItem) {
 
       <p v-else class="mt-5 text-[13px] text-[var(--ad-fg-subtle)]">Belum ada gambar kerja.</p>
 
-      <p v-if="errorMessage" class="ad-error-text mt-4">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="cms-error-text mt-4">{{ errorMessage }}</p>
     </template>
   </AdminCard>
 </template>

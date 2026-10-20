@@ -84,7 +84,7 @@ useHead({ title: 'Masuk — AA2U Admin' })
         <AdminIcon name="alert" :size="14" class="mt-0.5" />
         <p>
           Mode demo aktif — login tidak tersedia. Tambahkan kredensial Supabase di
-          <code class="ad-kbd">.env</code> untuk mengaktifkan.
+          <code class="cms-kbd">.env</code> untuk mengaktifkan.
         </p>
       </div>
 
@@ -95,38 +95,38 @@ useHead({ title: 'Masuk — AA2U Admin' })
         <AdminIcon name="lock" :size="14" class="mt-0.5" />
         <p>
           Akun ini tidak punya akses admin. Hubungi pengelola untuk diberi flag
-          <code class="ad-kbd">is_admin</code>.
+          <code class="cms-kbd">is_admin</code>.
         </p>
       </div>
 
-      <div class="ad-panel p-6">
+      <div class="cms-panel p-6">
         <form class="space-y-4" @submit.prevent="submit">
           <AdminField label="Email">
-            <div class="ad-input-group">
-              <span class="ad-input-group-icon"><AdminIcon name="mail" :size="14" /></span>
+            <div class="cms-input-group">
+              <span class="cms-input-group-icon"><AdminIcon name="mail" :size="14" /></span>
               <input
                 v-model="form.email"
                 type="email"
                 required
                 autocomplete="email"
                 placeholder="kamu@studio.com"
-                class="ad-input"
-                :class="status === 'error' ? 'ad-input-invalid' : ''"
+                class="cms-input"
+                :class="status === 'error' ? 'cms-input-invalid' : ''"
               />
             </div>
           </AdminField>
 
           <AdminField label="Password">
-            <div class="ad-input-group">
-              <span class="ad-input-group-icon"><AdminIcon name="lock" :size="14" /></span>
+            <div class="cms-input-group">
+              <span class="cms-input-group-icon"><AdminIcon name="lock" :size="14" /></span>
               <input
                 v-model="form.password"
                 :type="showPassword ? 'text' : 'password'"
                 required
                 autocomplete="current-password"
                 placeholder="••••••••"
-                class="ad-input ad-input-action"
-                :class="status === 'error' ? 'ad-input-invalid' : ''"
+                class="cms-input cms-input-action"
+                :class="status === 'error' ? 'cms-input-invalid' : ''"
               />
               <button
                 type="button"
@@ -139,7 +139,7 @@ useHead({ title: 'Masuk — AA2U Admin' })
             </div>
           </AdminField>
 
-          <p v-if="errorMessage" class="ad-error-text flex items-start gap-1.5">
+          <p v-if="errorMessage" class="cms-error-text flex items-start gap-1.5">
             <AdminIcon name="alert" :size="13" class="mt-0.5" />
             {{ errorMessage }}
           </p>

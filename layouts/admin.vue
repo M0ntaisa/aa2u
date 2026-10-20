@@ -88,7 +88,7 @@ onMounted(() => { void ensureLoaded() })
 <template>
   <div class="min-h-screen bg-[var(--ad-canvas)] text-[var(--ad-fg)] lg:flex">
     <!-- Mobile drawer backdrop -->
-    <Transition name="ad-fade">
+    <Transition name="cms-fade">
       <div
         v-if="mobileNavOpen"
         class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
@@ -113,7 +113,7 @@ onMounted(() => { void ensureLoaded() })
         </NuxtLink>
         <button
           type="button"
-          class="ad-btn ad-btn-ghost ad-btn-sm ad-btn-icon lg:hidden"
+          class="cms-btn cms-btn-ghost cms-btn-sm cms-btn-icon lg:hidden"
           aria-label="Tutup menu"
           @click="mobileNavOpen = false"
         >
@@ -121,17 +121,17 @@ onMounted(() => { void ensureLoaded() })
         </button>
       </div>
 
-      <nav class="ad-scroll flex-1 overflow-y-auto px-3 py-4">
+      <nav class="cms-scroll flex-1 overflow-y-auto px-3 py-4">
         <div v-for="group in navGroups" :key="group.label" class="mb-5 last:mb-0">
-          <p class="ad-eyebrow mb-1.5 px-2.5">{{ group.label }}</p>
+          <p class="cms-eyebrow mb-1.5 px-2.5">{{ group.label }}</p>
           <ul class="space-y-0.5">
             <li v-for="item in group.items" :key="item.to">
-              <NuxtLink :to="item.to" class="ad-nav-item" :data-active="isActive(item.to)">
+              <NuxtLink :to="item.to" class="cms-nav-item" :data-active="isActive(item.to)">
                 <AdminIcon :name="item.icon" :size="15" />
                 <span class="flex-1 truncate">{{ item.label }}</span>
                 <span
                   v-if="item.badge && item.badge() > 0"
-                  class="ad-badge ad-badge-accent px-1.5 text-[10px] leading-[15px]"
+                  class="cms-badge cms-badge-accent px-1.5 text-[10px] leading-[15px]"
                 >
                   {{ item.badge() }}
                 </span>
@@ -157,11 +157,11 @@ onMounted(() => { void ensureLoaded() })
         </div>
 
         <div class="grid grid-cols-2 gap-1.5">
-          <NuxtLink to="/" target="_blank" class="ad-btn ad-btn-ghost ad-btn-sm justify-start">
+          <NuxtLink to="/" target="_blank" class="cms-btn cms-btn-ghost cms-btn-sm justify-start">
             <AdminIcon name="external" :size="13" />
             <span>Situs</span>
           </NuxtLink>
-          <button type="button" class="ad-btn ad-btn-ghost ad-btn-sm justify-start" @click="signOut">
+          <button type="button" class="cms-btn cms-btn-ghost cms-btn-sm justify-start" @click="signOut">
             <AdminIcon name="logout" :size="13" />
             <span>Keluar</span>
           </button>
@@ -175,7 +175,7 @@ onMounted(() => { void ensureLoaded() })
       <header class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-[var(--ad-border)] bg-[rgba(20,21,29,0.85)] px-4 backdrop-blur-md lg:px-8">
         <button
           type="button"
-          class="ad-btn ad-btn-ghost ad-btn-sm ad-btn-icon lg:hidden"
+          class="cms-btn cms-btn-ghost cms-btn-sm cms-btn-icon lg:hidden"
           aria-label="Buka menu"
           @click="mobileNavOpen = true"
         >
@@ -206,11 +206,11 @@ onMounted(() => { void ensureLoaded() })
         <AdminIcon name="alert" :size="14" class="mt-0.5 shrink-0" />
         <p>
           Mode demo — Supabase belum dikonfigurasi. Data yang tampil berasal dari
-          <code class="ad-kbd">/data</code>, dan simpan/hapus tidak dipersist.
+          <code class="cms-kbd">/data</code>, dan simpan/hapus tidak dipersist.
         </p>
       </div>
 
-      <main class="ad-scroll flex-1 px-4 py-7 lg:px-8 lg:py-9">
+      <main class="cms-scroll flex-1 px-4 py-7 lg:px-8 lg:py-9">
         <slot />
       </main>
     </div>

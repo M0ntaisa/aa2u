@@ -224,17 +224,17 @@ function replyHref(inquiry: Inquiry) {
     </AdminPageHeader>
 
     <div class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <div class="ad-input-group max-w-xs flex-1">
-        <span class="ad-input-group-icon"><AdminIcon name="search" :size="15" /></span>
-        <input v-model="search" type="search" placeholder="Cari nama, email, isi pesan…" class="ad-input" />
+      <div class="cms-input-group max-w-xs flex-1">
+        <span class="cms-input-group-icon"><AdminIcon name="search" :size="15" /></span>
+        <input v-model="search" type="search" placeholder="Cari nama, email, isi pesan…" class="cms-input" />
       </div>
 
-      <div class="ad-seg self-start lg:self-auto">
+      <div class="cms-seg self-start lg:self-auto">
         <button
           v-for="t in filterTabs"
           :key="t.key"
           type="button"
-          class="ad-seg-item"
+          class="cms-seg-item"
           :aria-pressed="filter === t.key"
           @click="filter = t.key"
         >
@@ -245,12 +245,12 @@ function replyHref(inquiry: Inquiry) {
     </div>
 
     <div v-if="status === 'loading'" class="space-y-2">
-      <div v-for="i in 5" :key="i" class="ad-skeleton h-14 w-full" />
+      <div v-for="i in 5" :key="i" class="cms-skeleton h-14 w-full" />
     </div>
 
     <div
       v-else-if="status === 'error'"
-      class="ad-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
+      class="cms-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
     >
       <AdminIcon name="alert" :size="15" class="mt-0.5" />
       {{ errorMessage }}
@@ -305,7 +305,7 @@ function replyHref(inquiry: Inquiry) {
           >
             <dl class="grid gap-x-8 gap-y-3 text-[13px] sm:grid-cols-2">
               <div>
-                <dt class="ad-eyebrow mb-1">Email</dt>
+                <dt class="cms-eyebrow mb-1">Email</dt>
                 <dd class="flex items-center gap-2">
                   <a :href="`mailto:${inquiry.email}`" class="text-[var(--ad-accent)] hover:underline">
                     {{ inquiry.email }}
@@ -322,7 +322,7 @@ function replyHref(inquiry: Inquiry) {
               </div>
 
               <div v-if="inquiry.phone">
-                <dt class="ad-eyebrow mb-1">Telepon</dt>
+                <dt class="cms-eyebrow mb-1">Telepon</dt>
                 <dd>
                   <a :href="`tel:${inquiry.phone}`" class="text-[var(--ad-accent)] hover:underline">
                     {{ inquiry.phone }}
@@ -331,12 +331,12 @@ function replyHref(inquiry: Inquiry) {
               </div>
 
               <div v-if="inquiry.project_type">
-                <dt class="ad-eyebrow mb-1">Jenis projek</dt>
+                <dt class="cms-eyebrow mb-1">Jenis projek</dt>
                 <dd>{{ inquiry.project_type }}</dd>
               </div>
 
               <div>
-                <dt class="ad-eyebrow mb-1">Diterima</dt>
+                <dt class="cms-eyebrow mb-1">Diterima</dt>
                 <dd class="text-[var(--ad-fg-muted)]">
                   {{ formatDate(inquiry.created_at) }} · locale {{ inquiry.locale }}
                 </dd>
@@ -344,7 +344,7 @@ function replyHref(inquiry: Inquiry) {
             </dl>
 
             <div>
-              <p class="ad-eyebrow mb-2">Pesan</p>
+              <p class="cms-eyebrow mb-2">Pesan</p>
               <p class="whitespace-pre-wrap rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[var(--ad-surface-sunk)] p-3.5 text-[13px] leading-relaxed">
                 {{ inquiry.message }}
               </p>

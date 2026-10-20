@@ -55,7 +55,7 @@ html.admin-area * {
  * Typography helpers
  * --------------------------------------------------------------------- */
 
-.ad-eyebrow {
+.cms-eyebrow {
   font-size: 10px;
   line-height: 1.4;
   letter-spacing: 0.18em;
@@ -64,7 +64,7 @@ html.admin-area * {
   font-weight: 500;
 }
 
-.ad-label {
+.cms-label {
   display: block;
   font-size: 12px;
   line-height: 1.4;
@@ -74,22 +74,22 @@ html.admin-area * {
 }
 
 /* For labels that sit in a row which already owns the spacing. */
-.ad-label-inline { margin-bottom: 0; }
+.cms-label-inline { margin-bottom: 0; }
 
-.ad-label-req::after {
+.cms-label-req::after {
   content: '*';
   color: var(--ad-danger);
   margin-left: 4px;
 }
 
-.ad-hint {
+.cms-hint {
   font-size: 11.5px;
   line-height: 1.5;
   color: var(--ad-fg-subtle);
   margin-top: 6px;
 }
 
-.ad-error-text {
+.cms-error-text {
   font-size: 12px;
   line-height: 1.5;
   color: var(--ad-danger);
@@ -99,14 +99,14 @@ html.admin-area * {
  * Panels
  * --------------------------------------------------------------------- */
 
-.ad-panel {
+.cms-panel {
   background: var(--ad-surface);
   border: 1px solid var(--ad-border);
   border-radius: var(--ad-radius);
   box-shadow: var(--ad-shadow-panel);
 }
 
-.ad-panel-head {
+.cms-panel-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -115,25 +115,25 @@ html.admin-area * {
   border-bottom: 1px solid var(--ad-border);
 }
 
-.ad-panel-title {
+.cms-panel-title {
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--ad-fg);
 }
 
-.ad-panel-desc {
+.cms-panel-desc {
   font-size: 12px;
   line-height: 1.5;
   color: var(--ad-fg-subtle);
   margin-top: 3px;
 }
 
-.ad-panel-body {
+.cms-panel-body {
   padding: 20px;
 }
 
-.ad-panel-foot {
+.cms-panel-foot {
   padding: 14px 20px;
   border-top: 1px solid var(--ad-border);
   background: rgba(0, 0, 0, 0.14);
@@ -144,9 +144,9 @@ html.admin-area * {
  * Form controls
  * --------------------------------------------------------------------- */
 
-.ad-input,
-.ad-select,
-.ad-textarea {
+.cms-input,
+.cms-select,
+.cms-textarea {
   width: 100%;
   background: var(--ad-surface-sunk);
   border: 1px solid var(--ad-border);
@@ -160,59 +160,59 @@ html.admin-area * {
   outline: none;
 }
 
-.ad-textarea {
+.cms-textarea {
   height: auto;
   padding: 9px 12px;
   resize: vertical;
   min-height: 76px;
 }
 
-.ad-input::placeholder,
-.ad-textarea::placeholder {
+.cms-input::placeholder,
+.cms-textarea::placeholder {
   color: var(--ad-fg-subtle);
   opacity: 0.7;
 }
 
-.ad-input:hover,
-.ad-select:hover,
-.ad-textarea:hover {
+.cms-input:hover,
+.cms-select:hover,
+.cms-textarea:hover {
   border-color: var(--ad-border-strong);
 }
 
-.ad-input:focus,
-.ad-select:focus,
-.ad-textarea:focus {
+.cms-input:focus,
+.cms-select:focus,
+.cms-textarea:focus {
   border-color: var(--ad-accent);
   box-shadow: 0 0 0 3px rgba(122, 162, 247, 0.16);
   background: var(--ad-surface-sunk);
 }
 
-.ad-input:disabled,
-.ad-select:disabled,
-.ad-textarea:disabled {
+.cms-input:disabled,
+.cms-select:disabled,
+.cms-textarea:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Room for a trailing button inside the field (password reveal, clear, …).
-   Needed because .ad-input's padding shorthand outranks a Tailwind pr-* class. */
-.ad-input-action { padding-right: 38px; }
+   Needed because .cms-input's padding shorthand outranks a Tailwind pr-* class. */
+.cms-input-action { padding-right: 38px; }
 
 /* Compact variant for controls that sit inside a panel header. */
-.ad-input-compact {
+.cms-input-compact {
   height: 30px;
   font-size: 12.5px;
   padding: 0 8px;
 }
 
-.ad-input-invalid,
-.ad-input-invalid:focus {
+.cms-input-invalid,
+.cms-input-invalid:focus {
   border-color: var(--ad-danger);
   box-shadow: 0 0 0 3px rgba(247, 118, 142, 0.15);
 }
 
 /* Native select chevron */
-.ad-select {
+.cms-select {
   appearance: none;
   padding-right: 34px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b90a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
@@ -220,21 +220,21 @@ html.admin-area * {
   background-position: right 11px center;
 }
 
-.ad-select option {
+.cms-select option {
   background: var(--ad-surface);
   color: var(--ad-fg);
 }
 
 /* Input with a leading icon */
-.ad-input-group {
+.cms-input-group {
   position: relative;
 }
 
-.ad-input-group .ad-input {
+.cms-input-group .cms-input {
   padding-left: 36px;
 }
 
-.ad-input-group-icon {
+.cms-input-group-icon {
   position: absolute;
   left: 11px;
   top: 50%;
@@ -245,7 +245,7 @@ html.admin-area * {
 }
 
 /* Checkbox / switch */
-.ad-check {
+.cms-check {
   appearance: none;
   width: 16px;
   height: 16px;
@@ -258,12 +258,12 @@ html.admin-area * {
   transition: background 0.14s ease, border-color 0.14s ease;
 }
 
-.ad-check:checked {
+.cms-check:checked {
   background: var(--ad-accent);
   border-color: var(--ad-accent);
 }
 
-.ad-check:checked::after {
+.cms-check:checked::after {
   content: '';
   position: absolute;
   left: 4.5px;
@@ -275,12 +275,12 @@ html.admin-area * {
   transform: rotate(45deg);
 }
 
-.ad-check:focus-visible {
+.cms-check:focus-visible {
   outline: 2px solid var(--ad-accent);
   outline-offset: 2px;
 }
 
-.ad-switch-row {
+.cms-switch-row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -292,7 +292,7 @@ html.admin-area * {
  * Buttons
  * --------------------------------------------------------------------- */
 
-.ad-btn {
+.cms-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -309,68 +309,68 @@ html.admin-area * {
   transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, opacity 0.14s ease;
 }
 
-.ad-btn:disabled,
-.ad-btn[aria-disabled='true'] {
+.cms-btn:disabled,
+.cms-btn[aria-disabled='true'] {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-.ad-btn-primary {
+.cms-btn-primary {
   background: var(--ad-accent);
   color: var(--ad-accent-fg);
   font-weight: 600;
 }
-.ad-btn-primary:not(:disabled):hover { background: var(--ad-accent-hover); }
+.cms-btn-primary:not(:disabled):hover { background: var(--ad-accent-hover); }
 
-.ad-btn-secondary {
+.cms-btn-secondary {
   background: var(--ad-surface-hover);
   border-color: var(--ad-border-strong);
   color: var(--ad-fg);
 }
-.ad-btn-secondary:not(:disabled):hover {
+.cms-btn-secondary:not(:disabled):hover {
   background: #282a38;
   border-color: rgba(255, 255, 255, 0.24);
 }
 
-.ad-btn-ghost {
+.cms-btn-ghost {
   background: transparent;
   color: var(--ad-fg-muted);
 }
-.ad-btn-ghost:not(:disabled):hover {
+.cms-btn-ghost:not(:disabled):hover {
   background: var(--ad-surface-hover);
   color: var(--ad-fg);
 }
 
-.ad-btn-danger {
+.cms-btn-danger {
   background: transparent;
   border-color: rgba(247, 118, 142, 0.35);
   color: var(--ad-danger);
 }
-.ad-btn-danger:not(:disabled):hover {
+.cms-btn-danger:not(:disabled):hover {
   background: rgba(247, 118, 142, 0.12);
   border-color: rgba(247, 118, 142, 0.6);
 }
 
-.ad-btn-danger-solid {
+.cms-btn-danger-solid {
   background: var(--ad-danger);
   color: #1a0d11;
   font-weight: 600;
 }
-.ad-btn-danger-solid:not(:disabled):hover { background: #ff8ba1; }
+.cms-btn-danger-solid:not(:disabled):hover { background: #ff8ba1; }
 
-.ad-btn-sm {
+.cms-btn-sm {
   height: 30px;
   padding: 0 10px;
   font-size: 12px;
   gap: 5px;
 }
 
-.ad-btn-icon {
+.cms-btn-icon {
   width: var(--ad-control-h);
   padding: 0;
 }
 
-.ad-btn-icon.ad-btn-sm {
+.cms-btn-icon.cms-btn-sm {
   width: 30px;
 }
 
@@ -378,7 +378,7 @@ html.admin-area * {
  * Badges & chips
  * --------------------------------------------------------------------- */
 
-.ad-badge {
+.cms-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -391,33 +391,33 @@ html.admin-area * {
   white-space: nowrap;
 }
 
-.ad-badge-neutral {
+.cms-badge-neutral {
   background: rgba(255, 255, 255, 0.06);
   border-color: var(--ad-border);
   color: var(--ad-fg-muted);
 }
-.ad-badge-success {
+.cms-badge-success {
   background: rgba(130, 217, 165, 0.12);
   border-color: rgba(130, 217, 165, 0.28);
   color: var(--ad-success);
 }
-.ad-badge-warning {
+.cms-badge-warning {
   background: rgba(224, 175, 104, 0.12);
   border-color: rgba(224, 175, 104, 0.28);
   color: var(--ad-warning);
 }
-.ad-badge-danger {
+.cms-badge-danger {
   background: rgba(247, 118, 142, 0.12);
   border-color: rgba(247, 118, 142, 0.28);
   color: var(--ad-danger);
 }
-.ad-badge-accent {
+.cms-badge-accent {
   background: rgba(122, 162, 247, 0.14);
   border-color: rgba(122, 162, 247, 0.3);
   color: var(--ad-accent);
 }
 
-.ad-badge-dot {
+.cms-badge-dot {
   width: 6px;
   height: 6px;
   border-radius: 999px;
@@ -426,7 +426,7 @@ html.admin-area * {
 }
 
 /* Segmented control */
-.ad-seg {
+.cms-seg {
   display: inline-flex;
   padding: 3px;
   gap: 2px;
@@ -435,7 +435,7 @@ html.admin-area * {
   border-radius: var(--ad-radius-sm);
 }
 
-.ad-seg-item {
+.cms-seg-item {
   padding: 0 12px;
   height: 30px;
   border-radius: 4px;
@@ -448,8 +448,8 @@ html.admin-area * {
   cursor: pointer;
   transition: background 0.14s ease, color 0.14s ease;
 }
-.ad-seg-item:hover { color: var(--ad-fg); }
-.ad-seg-item[aria-pressed='true'] {
+.cms-seg-item:hover { color: var(--ad-fg); }
+.cms-seg-item[aria-pressed='true'] {
   background: var(--ad-surface-hover);
   color: var(--ad-fg);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -459,14 +459,14 @@ html.admin-area * {
  * Tables
  * --------------------------------------------------------------------- */
 
-.ad-table {
+.cms-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 13.5px;
 }
 
-.ad-table thead th {
+.cms-table thead th {
   position: sticky;
   top: 0;
   z-index: 1;
@@ -482,17 +482,17 @@ html.admin-area * {
   white-space: nowrap;
 }
 
-.ad-table tbody td {
+.cms-table tbody td {
   padding: 11px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   vertical-align: middle;
 }
 
-.ad-table tbody tr:last-child td { border-bottom: 0; }
-.ad-table tbody tr { transition: background 0.12s ease; }
-.ad-table tbody tr:hover { background: rgba(255, 255, 255, 0.032); }
+.cms-table tbody tr:last-child td { border-bottom: 0; }
+.cms-table tbody tr { transition: background 0.12s ease; }
+.cms-table tbody tr:hover { background: rgba(255, 255, 255, 0.032); }
 
-.ad-table-num {
+.cms-table-num {
   font-variant-numeric: tabular-nums;
   color: var(--ad-fg-subtle);
 }
@@ -501,7 +501,7 @@ html.admin-area * {
  * Sidebar navigation
  * --------------------------------------------------------------------- */
 
-.ad-nav-item {
+.cms-nav-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -514,18 +514,18 @@ html.admin-area * {
   position: relative;
 }
 
-.ad-nav-item:hover {
+.cms-nav-item:hover {
   background: rgba(255, 255, 255, 0.045);
   color: var(--ad-fg);
 }
 
-.ad-nav-item[data-active='true'] {
+.cms-nav-item[data-active='true'] {
   background: rgba(122, 162, 247, 0.12);
   color: #cddafd;
   font-weight: 500;
 }
 
-.ad-nav-item[data-active='true']::before {
+.cms-nav-item[data-active='true']::before {
   content: '';
   position: absolute;
   left: -10px;
@@ -540,25 +540,25 @@ html.admin-area * {
  * Scrollbars (admin only — the public site keeps the OS default)
  * --------------------------------------------------------------------- */
 
-.ad-scroll {
+.cms-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
 }
-.ad-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
-.ad-scroll::-webkit-scrollbar-track { background: transparent; }
-.ad-scroll::-webkit-scrollbar-thumb {
+.cms-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.cms-scroll::-webkit-scrollbar-track { background: transparent; }
+.cms-scroll::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   border: 3px solid transparent;
   background-clip: content-box;
 }
-.ad-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.22); }
+.cms-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.22); }
 
 /* --------------------------------------------------------------------- *
  * Overlays: toasts + dialog
  * --------------------------------------------------------------------- */
 
-.ad-toast {
+.cms-toast {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -574,18 +574,18 @@ html.admin-area * {
   color: var(--ad-fg);
 }
 
-.ad-toast-success { border-left: 3px solid var(--ad-success); }
-.ad-toast-error   { border-left: 3px solid var(--ad-danger); }
-.ad-toast-info    { border-left: 3px solid var(--ad-accent); }
-.ad-toast-warning { border-left: 3px solid var(--ad-warning); }
+.cms-toast-success { border-left: 3px solid var(--ad-success); }
+.cms-toast-error   { border-left: 3px solid var(--ad-danger); }
+.cms-toast-info    { border-left: 3px solid var(--ad-accent); }
+.cms-toast-warning { border-left: 3px solid var(--ad-warning); }
 
-.ad-toast-enter-active,
-.ad-toast-leave-active { transition: all 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
-.ad-toast-enter-from   { opacity: 0; transform: translateX(16px) scale(0.97); }
-.ad-toast-leave-to     { opacity: 0; transform: translateX(16px) scale(0.97); }
-.ad-toast-move         { transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
+.cms-toast-enter-active,
+.cms-toast-leave-active { transition: all 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
+.cms-toast-enter-from   { opacity: 0; transform: translateX(16px) scale(0.97); }
+.cms-toast-leave-to     { opacity: 0; transform: translateX(16px) scale(0.97); }
+.cms-toast-move         { transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
 
-.ad-dialog-backdrop {
+.cms-dialog-backdrop {
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -597,7 +597,7 @@ html.admin-area * {
   padding: 24px;
 }
 
-.ad-dialog {
+.cms-dialog {
   width: 100%;
   max-width: 420px;
   background: var(--ad-surface);
@@ -607,27 +607,27 @@ html.admin-area * {
   padding: 22px;
 }
 
-.ad-fade-enter-active,
-.ad-fade-leave-active { transition: opacity 0.16s ease; }
-.ad-fade-enter-from,
-.ad-fade-leave-to     { opacity: 0; }
+.cms-fade-enter-active,
+.cms-fade-leave-active { transition: opacity 0.16s ease; }
+.cms-fade-enter-from,
+.cms-fade-leave-to     { opacity: 0; }
 
-.ad-pop-enter-active { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-.ad-pop-leave-active { transition: all 0.14s ease-in; }
-.ad-pop-enter-from,
-.ad-pop-leave-to     { opacity: 0; transform: scale(0.96) translateY(6px); }
+.cms-pop-enter-active { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.cms-pop-leave-active { transition: all 0.14s ease-in; }
+.cms-pop-enter-from,
+.cms-pop-leave-to     { opacity: 0; transform: scale(0.96) translateY(6px); }
 
 /* --------------------------------------------------------------------- *
  * Misc
  * --------------------------------------------------------------------- */
 
-.ad-divider {
+.cms-divider {
   height: 1px;
   background: var(--ad-border);
   border: 0;
 }
 
-.ad-kbd {
+.cms-kbd {
   display: inline-flex;
   align-items: center;
   padding: 1px 5px;
@@ -641,14 +641,14 @@ html.admin-area * {
   line-height: 15px;
 }
 
-.ad-spin {
-  animation: ad-spin 0.7s linear infinite;
+.cms-spin {
+  animation: cms-spin 0.7s linear infinite;
 }
-@keyframes ad-spin {
+@keyframes cms-spin {
   to { transform: rotate(360deg); }
 }
 
-.ad-skeleton {
+.cms-skeleton {
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.04) 25%,
@@ -656,15 +656,15 @@ html.admin-area * {
     rgba(255, 255, 255, 0.04) 63%
   );
   background-size: 400% 100%;
-  animation: ad-shimmer 1.4s ease infinite;
+  animation: cms-shimmer 1.4s ease infinite;
   border-radius: 4px;
 }
-@keyframes ad-shimmer {
+@keyframes cms-shimmer {
   0%   { background-position: 100% 50%; }
   100% { background-position: 0 50%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ad-spin,
-  .ad-skeleton { animation: none; }
+  .cms-spin,
+  .cms-skeleton { animation: none; }
 }

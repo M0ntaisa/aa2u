@@ -206,7 +206,7 @@ const withCover = computed(() => {
           </template>
 
           <div v-if="inquiriesLoading" class="space-y-3 p-5">
-            <div v-for="i in 3" :key="i" class="ad-skeleton h-9 w-full" />
+            <div v-for="i in 3" :key="i" class="cms-skeleton h-9 w-full" />
           </div>
 
           <ul v-else-if="recentInquiries.length" class="divide-y divide-[rgba(255,255,255,0.05)]">
@@ -254,7 +254,7 @@ const withCover = computed(() => {
               <dd class="tabular-nums">{{ byStatus.featured }}</dd>
             </div>
 
-            <hr class="ad-divider" />
+            <hr class="cms-divider" />
 
             <div>
               <div class="mb-2 flex items-center justify-between gap-3">
@@ -275,13 +275,13 @@ const withCover = computed(() => {
 
     <!-- Quick actions -->
     <div class="mt-6">
-      <p class="ad-eyebrow mb-2.5">Aksi cepat</p>
+      <p class="cms-eyebrow mb-2.5">Aksi cepat</p>
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <NuxtLink
           v-for="a in quickActions"
           :key="a.to"
           :to="a.to"
-          class="ad-panel group flex items-center gap-3 p-4 transition-colors hover:border-[var(--ad-border-strong)] hover:bg-[var(--ad-surface-hover)]"
+          class="cms-panel group flex items-center gap-3 p-4 transition-colors hover:border-[var(--ad-border-strong)] hover:bg-[var(--ad-surface-hover)]"
         >
           <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[rgba(255,255,255,0.05)] text-[var(--ad-fg-muted)] transition-colors group-hover:text-[var(--ad-accent)]">
             <AdminIcon :name="a.icon" :size="15" />

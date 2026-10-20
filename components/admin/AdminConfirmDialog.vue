@@ -22,16 +22,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 <template>
   <ClientOnly>
     <Teleport to="body">
-      <Transition name="ad-fade">
+      <Transition name="cms-fade">
         <div
           v-if="state.open"
-          class="ad-dialog-backdrop"
+          class="cms-dialog-backdrop"
           role="dialog"
           aria-modal="true"
           @click.self="cancel"
         >
-          <Transition name="ad-pop" appear>
-            <div class="ad-dialog">
+          <Transition name="cms-pop" appear>
+            <div class="cms-dialog">
               <div class="flex items-start gap-3.5">
                 <div
                   class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"

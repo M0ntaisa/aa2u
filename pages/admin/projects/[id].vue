@@ -533,13 +533,13 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
                 required
                 pattern="[a-z0-9\-]+"
                 placeholder="rumah-selat"
-                class="ad-input"
+                class="cms-input"
                 @input="slugTouched = true"
               />
             </AdminField>
 
             <AdminField label="Status" hint="Hanya status published yang tampil di situs publik.">
-              <select v-model="form.status" class="ad-select">
+              <select v-model="form.status" class="cms-select">
                 <option v-for="o in statusOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
               </select>
             </AdminField>
@@ -549,18 +549,18 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
 
           <div class="grid gap-4 md:grid-cols-3">
             <AdminField label="Tahun">
-              <input v-model.number="form.year" type="number" min="1900" max="2100" placeholder="2024" class="ad-input" />
+              <input v-model.number="form.year" type="number" min="1900" max="2100" placeholder="2024" class="cms-input" />
             </AdminField>
 
             <AdminField label="Kategori">
-              <select v-model="form.category_slug" class="ad-select">
+              <select v-model="form.category_slug" class="cms-select">
                 <option value="">— Pilih —</option>
                 <option v-for="c in categories" :key="c.slug" :value="c.slug">{{ c.name.id }}</option>
               </select>
             </AdminField>
 
             <AdminField label="Urutan" hint="Makin kecil, makin awal tampil.">
-              <input v-model.number="form.sort_order" type="number" min="0" class="ad-input" />
+              <input v-model.number="form.sort_order" type="number" min="0" class="cms-input" />
             </AdminField>
           </div>
 
@@ -571,12 +571,12 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
               v-model="form.partners"
               type="text"
               placeholder="Studio Tanah, Arch. Putri Maharani"
-              class="ad-input"
+              class="cms-input"
             />
           </AdminField>
 
-          <label class="ad-switch-row rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[var(--ad-surface-sunk)] px-3.5 py-3">
-            <input v-model="form.is_featured" type="checkbox" class="ad-check" />
+          <label class="cms-switch-row rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[var(--ad-surface-sunk)] px-3.5 py-3">
+            <input v-model="form.is_featured" type="checkbox" class="cms-check" />
             <span class="min-w-0">
               <span class="block text-[13px]">Tampilkan di showcase homepage</span>
               <span class="block text-[11.5px] text-[var(--ad-fg-subtle)]">
@@ -599,34 +599,34 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
         <div class="space-y-5">
           <div class="grid gap-4 md:grid-cols-3">
             <AdminField label="Status bangunan" hint="Tampil sebagai Status publik (beda dengan status publish).">
-              <select v-model="form.build_status" class="ad-select">
+              <select v-model="form.build_status" class="cms-select">
                 <option value="">— Tidak ditampilkan —</option>
                 <option v-for="o in buildStatusOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
               </select>
             </AdminField>
             <AdminField label="Luas tapak (m²)">
-              <input v-model.number="form.area_site_m2" type="number" min="0.1" step="0.1" placeholder="2800" class="ad-input" />
+              <input v-model.number="form.area_site_m2" type="number" min="0.1" step="0.1" placeholder="2800" class="cms-input" />
             </AdminField>
             <AdminField label="Luas bangunan (m²)">
-              <input v-model.number="form.area_built_m2" type="number" min="0.1" step="0.1" placeholder="1240" class="ad-input" />
+              <input v-model.number="form.area_built_m2" type="number" min="0.1" step="0.1" placeholder="1240" class="cms-input" />
             </AdminField>
           </div>
 
           <div class="space-y-3">
-            <span class="ad-label">Klien</span>
-            <div class="ad-seg" role="group" aria-label="Tampilan nama klien">
+            <span class="cms-label">Klien</span>
+            <div class="cms-seg" role="group" aria-label="Tampilan nama klien">
               <button
                 v-for="o in clientModeOptions"
                 :key="o.value"
                 type="button"
-                class="ad-seg-item"
+                class="cms-seg-item"
                 :aria-pressed="form.client_mode === o.value"
                 @click="form.client_mode = o.value"
               >
                 {{ o.label }}
               </button>
             </div>
-            <p class="ad-hint">
+            <p class="cms-hint">
               <template v-if="form.client_mode === 'private'">
                 Publik melihat “{{ PRIVATE_CLIENT_LABEL.id }}” / “{{ PRIVATE_CLIENT_LABEL.en }}”.
               </template>
@@ -650,7 +650,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
                 : 'Privat — hanya admin yang bisa membaca. Tidak pernah dikirim ke situs publik.'"
             >
               <span class="relative block">
-                <input v-model="form.client_name" type="text" maxlength="200" placeholder="PT Contoh Abadi" class="ad-input ad-input-action" />
+                <input v-model="form.client_name" type="text" maxlength="200" placeholder="PT Contoh Abadi" class="cms-input cms-input-action" />
                 <span v-if="form.client_mode !== 'name'" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ad-fg-subtle)]">
                   <AdminIcon name="lock" :size="13" />
                 </span>
@@ -666,7 +666,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
               hint="Enter atau koma untuk menambah. Nama dari halaman Tim muncul sebagai saran."
             />
             <AdminField label="Fotografer">
-              <input v-model="form.photographer" type="text" maxlength="200" placeholder="Mario Wibowo" class="ad-input" />
+              <input v-model="form.photographer" type="text" maxlength="200" placeholder="Mario Wibowo" class="cms-input" />
             </AdminField>
           </div>
         </div>
@@ -680,7 +680,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
                 v-model="coordsPaste"
                 type="text"
                 placeholder="-6.1754, 106.8272"
-                class="ad-input"
+                class="cms-input"
                 @keydown.enter.prevent="applyPastedCoords"
                 @paste="onCoordsPaste"
               />
@@ -690,13 +690,13 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
 
           <div class="grid gap-4 md:grid-cols-[1fr_1fr_200px]">
             <AdminField label="Latitude" hint="Selatan khatulistiwa = negatif.">
-              <input v-model.number="form.lat" type="number" step="any" min="-90" max="90" placeholder="-6.1754" class="ad-input" />
+              <input v-model.number="form.lat" type="number" step="any" min="-90" max="90" placeholder="-6.1754" class="cms-input" />
             </AdminField>
             <AdminField label="Longitude">
-              <input v-model.number="form.lng" type="number" step="any" min="-180" max="180" placeholder="106.8272" class="ad-input" />
+              <input v-model.number="form.lng" type="number" step="any" min="-180" max="180" placeholder="106.8272" class="cms-input" />
             </AdminField>
             <div>
-              <span class="ad-label">Pratinjau</span>
+              <span class="cms-label">Pratinjau</span>
               <!-- Indonesia bounds box; the marker should sit inside it. -->
               <div class="relative aspect-[47/18] overflow-hidden rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[#1a1b26]">
                 <span
@@ -712,8 +712,8 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
             Titik di luar Indonesia — cek tanda minus atau urutan lat/lng.
           </p>
 
-          <label class="ad-switch-row rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[var(--ad-surface-sunk)] px-3.5 py-3">
-            <input v-model="form.hide_location" type="checkbox" class="ad-check" />
+          <label class="cms-switch-row rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[var(--ad-surface-sunk)] px-3.5 py-3">
+            <input v-model="form.hide_location" type="checkbox" class="cms-check" />
             <span class="min-w-0">
               <span class="block text-[13px]">Sembunyikan lokasi</span>
               <span class="block text-[11.5px] text-[var(--ad-fg-subtle)]">
@@ -723,7 +723,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
           </label>
 
           <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-[var(--ad-fg-muted)]">
-            <span><span class="ad-eyebrow mr-1.5">Publik</span>{{ publicCoords }}</span>
+            <span><span class="cms-eyebrow mr-1.5">Publik</span>{{ publicCoords }}</span>
             <a v-if="mapsLink" :href="mapsLink" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[var(--ad-accent)]">
               Cek di Google Maps <AdminIcon name="external" :size="12" />
             </a>
@@ -796,7 +796,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
           </AdminButton>
           <AdminButton to="/admin/projects" variant="ghost">Batal</AdminButton>
 
-          <p v-if="errorMessage" class="ad-error-text flex items-center gap-1.5">
+          <p v-if="errorMessage" class="cms-error-text flex items-center gap-1.5">
             <AdminIcon name="alert" :size="13" />
             {{ errorMessage }}
           </p>

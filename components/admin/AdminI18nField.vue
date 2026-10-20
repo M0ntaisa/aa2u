@@ -35,7 +35,7 @@ const langs = [
 <template>
   <div>
     <div class="mb-1.5 flex items-baseline justify-between gap-3">
-      <span class="ad-label ad-label-inline" :class="required ? 'ad-label-req' : ''">{{ label }}</span>
+      <span class="cms-label cms-label-inline" :class="required ? 'cms-label-req' : ''">{{ label }}</span>
       <button
         v-if="enMissing"
         type="button"
@@ -49,7 +49,7 @@ const langs = [
     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
       <div v-for="lang in langs" :key="lang.key">
         <div class="mb-1 flex items-center gap-1.5">
-          <span class="ad-eyebrow">{{ lang.label }}</span>
+          <span class="cms-eyebrow">{{ lang.label }}</span>
           <span class="text-[10px] text-[var(--ad-fg-subtle)] opacity-70">{{ lang.hint }}</span>
           <span
             v-if="lang.key === 'en' && enMissing"
@@ -65,7 +65,7 @@ const langs = [
           type="text"
           :placeholder="placeholder"
           :required="required && lang.key === 'id'"
-          class="ad-input"
+          class="cms-input"
           @input="update(lang.key, ($event.target as HTMLInputElement).value)"
         />
         <textarea
@@ -73,12 +73,12 @@ const langs = [
           :value="value[lang.key]"
           :rows="rows ?? 4"
           :placeholder="placeholder"
-          class="ad-textarea"
+          class="cms-textarea"
           @input="update(lang.key, ($event.target as HTMLTextAreaElement).value)"
         />
       </div>
     </div>
 
-    <p v-if="hint" class="ad-hint">{{ hint }}</p>
+    <p v-if="hint" class="cms-hint">{{ hint }}</p>
   </div>
 </template>

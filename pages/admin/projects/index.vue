@@ -98,23 +98,23 @@ const hasFilters = computed(() => !!search.value.trim() || statusFilter.value !=
 
     <!-- Toolbar -->
     <div class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <div class="ad-input-group max-w-xs flex-1">
-        <span class="ad-input-group-icon"><AdminIcon name="search" :size="15" /></span>
+      <div class="cms-input-group max-w-xs flex-1">
+        <span class="cms-input-group-icon"><AdminIcon name="search" :size="15" /></span>
         <input
           v-model="search"
           type="search"
           placeholder="Cari judul, slug, tahun…"
-          class="ad-input"
+          class="cms-input"
           aria-label="Cari projek"
         />
       </div>
 
-      <div class="ad-seg self-start lg:self-auto">
+      <div class="cms-seg self-start lg:self-auto">
         <button
           v-for="f in filters"
           :key="f.key"
           type="button"
-          class="ad-seg-item"
+          class="cms-seg-item"
           :aria-pressed="statusFilter === f.key"
           @click="statusFilter = f.key"
         >
@@ -127,14 +127,14 @@ const hasFilters = computed(() => !!search.value.trim() || statusFilter.value !=
     <!-- Loading -->
     <AdminCard v-if="fetchStatus === 'pending'" flush>
       <div class="space-y-3 p-5">
-        <div v-for="i in 5" :key="i" class="ad-skeleton h-10 w-full" />
+        <div v-for="i in 5" :key="i" class="cms-skeleton h-10 w-full" />
       </div>
     </AdminCard>
 
     <!-- Table -->
     <AdminCard v-else-if="filtered.length" flush>
-      <div class="ad-scroll overflow-x-auto">
-        <table class="ad-table">
+      <div class="cms-scroll overflow-x-auto">
+        <table class="cms-table">
           <thead>
             <tr>
               <th class="w-14">
@@ -168,7 +168,7 @@ const hasFilters = computed(() => !!search.value.trim() || statusFilter.value !=
           </thead>
           <tbody>
             <tr v-for="p in filtered" :key="p.slug">
-              <td class="ad-table-num">{{ String((p.sort_order ?? 0) + 1).padStart(2, '0') }}</td>
+              <td class="cms-table-num">{{ String((p.sort_order ?? 0) + 1).padStart(2, '0') }}</td>
 
               <td>
                 <div class="flex items-center gap-3">
@@ -196,7 +196,7 @@ const hasFilters = computed(() => !!search.value.trim() || statusFilter.value !=
                 </div>
               </td>
 
-              <td class="ad-table-num">{{ p.year ?? '—' }}</td>
+              <td class="cms-table-num">{{ p.year ?? '—' }}</td>
 
               <td class="text-[var(--ad-fg-muted)]">
                 {{ p.category ? tt(p.category.name) : '—' }}
@@ -246,7 +246,7 @@ const hasFilters = computed(() => !!search.value.trim() || statusFilter.value !=
       <template #footer>
         <p class="text-[12px] text-[var(--ad-fg-subtle)]">
           Menampilkan {{ filtered.length }} dari {{ counts.all }} projek.
-          Urutan tampil di situs mengikuti kolom <span class="ad-kbd">#</span>.
+          Urutan tampil di situs mengikuti kolom <span class="cms-kbd">#</span>.
         </p>
       </template>
     </AdminCard>

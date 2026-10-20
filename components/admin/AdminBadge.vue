@@ -9,8 +9,8 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <span class="ad-badge" :class="`ad-badge-${tone}`">
-    <span v-if="dot" class="ad-badge-dot" />
+  <span class="cms-badge" :class="`cms-badge-${tone}`">
+    <span v-if="dot" class="cms-badge-dot" />
     <slot />
   </span>
 </template>

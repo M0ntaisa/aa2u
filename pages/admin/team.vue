@@ -208,18 +208,18 @@ async function removeRow(row: TeamRow) {
       </template>
     </AdminPageHeader>
 
-    <div v-if="items.length > 3" class="ad-input-group mb-4 max-w-xs">
-      <span class="ad-input-group-icon"><AdminIcon name="search" :size="15" /></span>
-      <input v-model="search" type="search" placeholder="Cari nama atau peran…" class="ad-input" />
+    <div v-if="items.length > 3" class="cms-input-group mb-4 max-w-xs">
+      <span class="cms-input-group-icon"><AdminIcon name="search" :size="15" /></span>
+      <input v-model="search" type="search" placeholder="Cari nama atau peran…" class="cms-input" />
     </div>
 
     <div v-if="status === 'loading'" class="space-y-4">
-      <div v-for="i in 2" :key="i" class="ad-skeleton h-52 w-full" />
+      <div v-for="i in 2" :key="i" class="cms-skeleton h-52 w-full" />
     </div>
 
     <div
       v-else-if="status === 'error'"
-      class="ad-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
+      class="cms-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
     >
       <AdminIcon name="alert" :size="15" class="mt-0.5" />
       {{ errorMessage }}
@@ -245,10 +245,10 @@ async function removeRow(row: TeamRow) {
           <div class="space-y-5">
             <div class="grid gap-4 md:grid-cols-[1fr_110px]">
               <AdminField label="Nama" required>
-                <input v-model="row.name" type="text" required placeholder="Aditya Pratama" class="ad-input" />
+                <input v-model="row.name" type="text" required placeholder="Aditya Pratama" class="cms-input" />
               </AdminField>
               <AdminField label="Urutan">
-                <input v-model.number="row.sort_order" type="number" min="0" class="ad-input" />
+                <input v-model.number="row.sort_order" type="number" min="0" class="cms-input" />
               </AdminField>
             </div>
 
@@ -257,15 +257,15 @@ async function removeRow(row: TeamRow) {
 
             <div class="grid gap-4 md:grid-cols-2">
               <AdminField label="LinkedIn URL">
-                <input v-model="row.social_linkedin" type="url" placeholder="https://linkedin.com/in/…" class="ad-input" />
+                <input v-model="row.social_linkedin" type="url" placeholder="https://linkedin.com/in/…" class="cms-input" />
               </AdminField>
               <AdminField label="Instagram URL">
-                <input v-model="row.social_instagram" type="url" placeholder="https://instagram.com/…" class="ad-input" />
+                <input v-model="row.social_instagram" type="url" placeholder="https://instagram.com/…" class="cms-input" />
               </AdminField>
             </div>
 
-            <label class="ad-switch-row">
-              <input v-model="row.is_active" type="checkbox" class="ad-check" />
+            <label class="cms-switch-row">
+              <input v-model="row.is_active" type="checkbox" class="cms-check" />
               <span class="text-[13px]">Tampilkan di halaman /about</span>
             </label>
 
@@ -280,7 +280,7 @@ async function removeRow(row: TeamRow) {
                 {{ row.id ? 'Simpan' : 'Buat' }}
               </AdminButton>
               <AdminButton variant="danger" size="sm" icon="trash" @click="removeRow(row)">Hapus</AdminButton>
-              <p v-if="row._error" class="ad-error-text">{{ row._error }}</p>
+              <p v-if="row._error" class="cms-error-text">{{ row._error }}</p>
             </div>
           </div>
         </div>

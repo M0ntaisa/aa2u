@@ -156,7 +156,7 @@ async function removeItem(item: MaterialItem) {
 
     <template v-else>
       <ul v-if="status === 'loading'" class="space-y-3">
-        <li v-for="i in 2" :key="i" class="ad-skeleton h-32 w-full" />
+        <li v-for="i in 2" :key="i" class="cms-skeleton h-32 w-full" />
       </ul>
 
       <ul v-else-if="items.length" class="mb-6 space-y-3">
@@ -185,7 +185,7 @@ async function removeItem(item: MaterialItem) {
               aspect="aspect-square"
             />
             <div class="flex items-center gap-1">
-              <span class="ad-eyebrow flex items-center gap-1">
+              <span class="cms-eyebrow flex items-center gap-1">
                 <AdminIcon name="grip" :size="12" />
                 #{{ String(i + 1).padStart(2, '0') }}
               </span>
@@ -204,14 +204,14 @@ async function removeItem(item: MaterialItem) {
                 Simpan
               </AdminButton>
               <AdminButton variant="danger" size="sm" icon="trash" @click="removeItem(item)">Hapus</AdminButton>
-              <p v-if="item._error" class="ad-error-text">{{ item._error }}</p>
+              <p v-if="item._error" class="cms-error-text">{{ item._error }}</p>
             </div>
           </div>
         </li>
       </ul>
 
       <div class="rounded-[var(--ad-radius-sm)] border border-dashed border-[var(--ad-border-strong)] p-4">
-        <p class="ad-eyebrow mb-3">Material baru</p>
+        <p class="cms-eyebrow mb-3">Material baru</p>
         <div class="grid gap-4 md:grid-cols-[160px_1fr]">
           <AdminImageUpload
             v-model="draft.image"
@@ -230,7 +230,7 @@ async function removeItem(item: MaterialItem) {
         </div>
       </div>
 
-      <p v-if="errorMessage" class="ad-error-text mt-4">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="cms-error-text mt-4">{{ errorMessage }}</p>
     </template>
   </AdminCard>
 </template>

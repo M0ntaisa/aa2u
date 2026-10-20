@@ -143,7 +143,7 @@ function remove() {
 
 <template>
   <div>
-    <span class="ad-label">{{ label }}</span>
+    <span class="cms-label">{{ label }}</span>
 
     <div v-if="previewUrl" class="space-y-2.5">
       <div
@@ -191,7 +191,7 @@ function remove() {
       @drop.prevent="onDrop"
     >
       <template v-if="status === 'uploading'">
-        <AdminIcon name="loader" :size="20" class="ad-spin text-[var(--ad-accent)]" />
+        <AdminIcon name="loader" :size="20" class="cms-spin text-[var(--ad-accent)]" />
         <span class="mt-2.5 text-[13px] text-[var(--ad-fg-muted)]">Mengunggah…</span>
       </template>
 
@@ -203,13 +203,13 @@ function remove() {
           <span class="text-[var(--ad-accent)]">Pilih file</span>
           <span class="text-[var(--ad-fg-muted)]"> atau seret ke sini</span>
         </span>
-        <span class="ad-eyebrow mt-1.5">{{ formatList }} · maks {{ maxSizeMb }}MB</span>
+        <span class="cms-eyebrow mt-1.5">{{ formatList }} · maks {{ maxSizeMb }}MB</span>
       </template>
     </button>
 
     <input ref="fileInput" type="file" :accept="acceptAttr" class="hidden" @change="onChange" />
 
-    <p v-if="hint && status !== 'error'" class="ad-hint">{{ hint }}</p>
-    <p v-if="status === 'error'" class="ad-error-text mt-1.5">{{ errorMessage }}</p>
+    <p v-if="hint && status !== 'error'" class="cms-hint">{{ hint }}</p>
+    <p v-if="status === 'error'" class="cms-error-text mt-1.5">{{ errorMessage }}</p>
   </div>
 </template>

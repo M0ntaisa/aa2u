@@ -23,11 +23,11 @@ const toneClass: Record<string, string> = {
   <component
     :is="to ? NuxtLink : 'div'"
     :to="to"
-    class="ad-panel group block p-5 transition-colors"
+    class="cms-panel group block p-5 transition-colors"
     :class="to ? 'hover:border-[var(--ad-border-strong)] hover:bg-[var(--ad-surface-hover)]' : ''"
   >
     <div class="flex items-start justify-between gap-3">
-      <span class="ad-eyebrow">{{ label }}</span>
+      <span class="cms-eyebrow">{{ label }}</span>
       <span
         class="flex h-7 w-7 items-center justify-center rounded-md"
         :class="toneClass[tone ?? 'neutral']"

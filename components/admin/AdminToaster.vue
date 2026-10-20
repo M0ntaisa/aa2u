@@ -23,11 +23,11 @@ const colorFor: Record<string, string> = {
     <Teleport to="body">
       <TransitionGroup
         tag="div"
-        name="ad-toast"
+        name="cms-toast"
         class="fixed bottom-5 right-5 z-[120] flex flex-col gap-2.5"
         aria-live="polite"
       >
-        <div v-for="t in toasts" :key="t.id" class="ad-toast" :class="`ad-toast-${t.tone}`">
+        <div v-for="t in toasts" :key="t.id" class="cms-toast" :class="`cms-toast-${t.tone}`">
           <AdminIcon :name="iconFor[t.tone]" :size="16" :class="[colorFor[t.tone], 'mt-0.5']" />
           <div class="min-w-0 flex-1">
             <p class="font-medium">{{ t.title }}</p>

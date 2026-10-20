@@ -175,7 +175,7 @@ const manifestoLength = computed(() => form.value.manifesto.id.length)
               type="text"
               required
               placeholder="Atelier Arsitek 2u"
-              class="ad-input"
+              class="cms-input"
             />
           </AdminField>
 
@@ -186,7 +186,7 @@ const manifestoLength = computed(() => form.value.manifesto.id.length)
             type="textarea"
             :rows="6"
           />
-          <p class="ad-hint -mt-2">{{ manifestoLength }} karakter (ID) · tampil di halaman depan dan /about.</p>
+          <p class="cms-hint -mt-2">{{ manifestoLength }} karakter (ID) · tampil di halaman depan dan /about.</p>
         </div>
       </AdminCard>
 
@@ -194,16 +194,16 @@ const manifestoLength = computed(() => form.value.manifesto.id.length)
         <div class="space-y-5">
           <div class="grid gap-4 md:grid-cols-2">
             <AdminField label="Email">
-              <div class="ad-input-group">
-                <span class="ad-input-group-icon"><AdminIcon name="mail" :size="14" /></span>
-                <input v-model="form.contact_email" type="email" placeholder="studio@aa2u.example" class="ad-input" />
+              <div class="cms-input-group">
+                <span class="cms-input-group-icon"><AdminIcon name="mail" :size="14" /></span>
+                <input v-model="form.contact_email" type="email" placeholder="studio@aa2u.example" class="cms-input" />
               </div>
             </AdminField>
 
             <AdminField label="Telepon">
-              <div class="ad-input-group">
-                <span class="ad-input-group-icon"><AdminIcon name="phone" :size="14" /></span>
-                <input v-model="form.contact_phone" type="tel" placeholder="+62 21 1234 5678" class="ad-input" />
+              <div class="cms-input-group">
+                <span class="cms-input-group-icon"><AdminIcon name="phone" :size="14" /></span>
+                <input v-model="form.contact_phone" type="tel" placeholder="+62 21 1234 5678" class="cms-input" />
               </div>
             </AdminField>
           </div>
@@ -215,13 +215,13 @@ const manifestoLength = computed(() => form.value.manifesto.id.length)
       <AdminCard title="Sosial" icon="globe" description="Kosongkan untuk menyembunyikan tautan dari footer.">
         <div class="grid gap-4 md:grid-cols-3">
           <AdminField label="Instagram">
-            <input v-model="form.socials.instagram" type="url" placeholder="https://instagram.com/…" class="ad-input" />
+            <input v-model="form.socials.instagram" type="url" placeholder="https://instagram.com/…" class="cms-input" />
           </AdminField>
           <AdminField label="LinkedIn">
-            <input v-model="form.socials.linkedin" type="url" placeholder="https://linkedin.com/…" class="ad-input" />
+            <input v-model="form.socials.linkedin" type="url" placeholder="https://linkedin.com/…" class="cms-input" />
           </AdminField>
           <AdminField label="Behance">
-            <input v-model="form.socials.behance" type="url" placeholder="https://behance.net/…" class="ad-input" />
+            <input v-model="form.socials.behance" type="url" placeholder="https://behance.net/…" class="cms-input" />
           </AdminField>
         </div>
       </AdminCard>
@@ -232,7 +232,7 @@ const manifestoLength = computed(() => form.value.manifesto.id.length)
             Simpan pengaturan
           </AdminButton>
 
-          <p v-if="errorMessage" class="ad-error-text flex items-center gap-1.5">
+          <p v-if="errorMessage" class="cms-error-text flex items-center gap-1.5">
             <AdminIcon name="alert" :size="13" />
             {{ errorMessage }}
           </p>

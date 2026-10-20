@@ -18,7 +18,7 @@ withDefaults(defineProps<{
     class="rounded-[var(--ad-radius)] px-6 py-14 text-center"
     :class="dashed
       ? 'border border-dashed border-[var(--ad-border-strong)] bg-[rgba(255,255,255,0.012)]'
-      : 'ad-panel'"
+      : 'cms-panel'"
   >
     <div class="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full border border-[var(--ad-border)] bg-[var(--ad-surface-hover)] text-[var(--ad-fg-subtle)]">
       <AdminIcon :name="icon" :size="19" />

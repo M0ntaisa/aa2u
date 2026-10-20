@@ -168,12 +168,12 @@ async function removeRow(row: CategoryRow) {
     </AdminPageHeader>
 
     <div v-if="status === 'loading'" class="space-y-3">
-      <div v-for="i in 3" :key="i" class="ad-skeleton h-24 w-full" />
+      <div v-for="i in 3" :key="i" class="cms-skeleton h-24 w-full" />
     </div>
 
     <div
       v-else-if="status === 'error'"
-      class="ad-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
+      class="cms-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
     >
       <AdminIcon name="alert" :size="15" class="mt-0.5" />
       {{ errorMessage }}
@@ -189,11 +189,11 @@ async function removeRow(row: CategoryRow) {
                 type="text"
                 pattern="[a-z0-9\-]+"
                 placeholder="residensial"
-                class="ad-input"
+                class="cms-input"
               />
             </AdminField>
             <AdminField label="Urutan">
-              <input v-model.number="row.sort_order" type="number" min="0" class="ad-input" />
+              <input v-model.number="row.sort_order" type="number" min="0" class="cms-input" />
             </AdminField>
           </div>
 
@@ -215,7 +215,7 @@ async function removeRow(row: CategoryRow) {
           </div>
         </div>
 
-        <p v-if="row._error" class="ad-error-text mt-3">{{ row._error }}</p>
+        <p v-if="row._error" class="cms-error-text mt-3">{{ row._error }}</p>
       </AdminCard>
     </div>
 

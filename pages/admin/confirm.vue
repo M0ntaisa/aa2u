@@ -13,7 +13,7 @@ watch(user, (u) => {
 
 <template>
   <div class="flex min-h-screen flex-col items-center justify-center gap-3 bg-[var(--ad-canvas)]">
-    <AdminIcon name="loader" :size="20" class="ad-spin text-[var(--ad-accent)]" />
+    <AdminIcon name="loader" :size="20" class="cms-spin text-[var(--ad-accent)]" />
     <p class="text-[13px] text-[var(--ad-fg-muted)]">Memverifikasi sesi…</p>
   </div>
 </template>

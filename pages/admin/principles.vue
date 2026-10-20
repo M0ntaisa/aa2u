@@ -152,12 +152,12 @@ async function removeRow(row: PrincipleRow) {
     </AdminPageHeader>
 
     <div v-if="status === 'loading'" class="space-y-3">
-      <div v-for="i in 3" :key="i" class="ad-skeleton h-40 w-full" />
+      <div v-for="i in 3" :key="i" class="cms-skeleton h-40 w-full" />
     </div>
 
     <div
       v-else-if="status === 'error'"
-      class="ad-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
+      class="cms-panel flex items-start gap-2.5 p-4 text-[13px] text-[var(--ad-danger)]"
     >
       <AdminIcon name="alert" :size="15" class="mt-0.5" />
       {{ errorMessage }}
@@ -171,7 +171,7 @@ async function removeRow(row: PrincipleRow) {
       >
         <template #actions>
           <AdminField label="Urutan" class="w-20">
-            <input v-model.number="row.sort_order" type="number" min="0" class="ad-input ad-input-compact" />
+            <input v-model.number="row.sort_order" type="number" min="0" class="cms-input cms-input-compact" />
           </AdminField>
         </template>
 
@@ -196,7 +196,7 @@ async function removeRow(row: PrincipleRow) {
               {{ row.id ? 'Simpan' : 'Buat' }}
             </AdminButton>
             <AdminButton variant="danger" size="sm" icon="trash" @click="removeRow(row)">Hapus</AdminButton>
-            <p v-if="row._error" class="ad-error-text">{{ row._error }}</p>
+            <p v-if="row._error" class="cms-error-text">{{ row._error }}</p>
           </div>
         </div>
       </AdminCard>

@@ -56,7 +56,7 @@ const remaining = computed(() => props.suggestions.filter(s => !model.value.incl
 
 <template>
   <div>
-    <span v-if="label" class="ad-label">{{ label }}</span>
+    <span v-if="label" class="cms-label">{{ label }}</span>
     <div class="flex min-h-[var(--ad-control-h)] flex-wrap items-center gap-1.5 rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[var(--ad-surface-sunk)] px-2 py-1.5">
       <span
         v-for="(tag, i) in model"
@@ -88,6 +88,6 @@ const remaining = computed(() => props.suggestions.filter(s => !model.value.incl
         <option v-for="s in remaining" :key="s" :value="s" />
       </datalist>
     </div>
-    <p v-if="hint" class="ad-hint">{{ hint }}</p>
+    <p v-if="hint" class="cms-hint">{{ hint }}</p>
   </div>
 </template>
