@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="square">
+  <!-- Placeholder section: ground line, two levels, roof -->
+  <path d="M60 480h1080" stroke-width="4"/>
+  <path d="M60 480l200 -40 200 -20h680" stroke-width="1" stroke-dasharray="10 6"/>
+  <path d="M200 480v-300h760v300M200 330h760" stroke-width="5"/>
+  <path d="M160 180l480 -90 480 90" stroke-width="3"/>
+  <path d="M440 480v-150M720 330v-150" stroke-width="1"/>
+  <path d="M1000 480v-300M990 480h20M990 330h20M990 180h20" stroke-width="1"/>
+</svg>

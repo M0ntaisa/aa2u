@@ -35,11 +35,13 @@ const words = computed(() => {
 onMounted(() => {
   const { $gsap, $ScrollTrigger } = useNuxtApp() as any
   if (!$gsap || !$ScrollTrigger || !root.value || !content.value) return
-  if (prefersReducedMotion()) return
 
-  let tween: any = null
+  // Scrub only on md+ with motion allowed. On mobile and under reduced
+  // motion the text stays fully lit (the SSR default) and nothing pins.
+  // gsap.matchMedia reverts the tween automatically when the query flips.
+  const mm = $gsap.matchMedia()
 
-  const setup = () => {
+  mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
     const wordEls = content.value!.querySelectorAll<HTMLElement>('.m-word')
     if (!wordEls.length) return
 
@@ -48,7 +50,7 @@ onMounted(() => {
       color: 'rgba(255,255,255,0.12)',
     })
 
-    tween = $gsap.to(wordEls, {
+    $gsap.to(wordEls, {
       opacity: 1,
       color: (_i: number, el: HTMLElement) =>
         el.classList.contains('is-accent') ? 'var(--color-accent, #c0caf5)' : '#ffffff',
@@ -62,17 +64,10 @@ onMounted(() => {
       },
     })
 
-    $ScrollTrigger.refresh()
-  }
-
-  requestAnimationFrame(() => requestAnimationFrame(setup))
-
-  onBeforeUnmount(() => {
-    if (tween) {
-      tween.scrollTrigger?.kill()
-      tween.kill()
-    }
+    requestAnimationFrame(() => $ScrollTrigger.refresh())
   })
+
+  onBeforeUnmount(() => mm.revert())
 })
 </script>
 
@@ -81,20 +76,14 @@ onMounted(() => {
     ref="root"
     class="manifesto-section relative"
   >
-    <div class="sticky top-0 h-screen flex items-center px-6 md:px-10">
-      <div class="w-full max-w-6xl mx-auto">
-        <div
-          v-if="eyebrow"
-          class="flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/45 mb-10 md:mb-14"
-        >
-          <span class="font-mono">01</span>
-          <span class="w-8 h-px bg-current opacity-60" />
-          <span>{{ eyebrow }}</span>
-        </div>
+    <div class="md:sticky md:top-0 md:h-screen flex items-center py-24 md:py-0">
+      <div class="sheet-wrap">
+        <SheetRuler sheet="A-01.1" :label="eyebrow" class="mb-10 md:mb-14" />
+        <h2 v-if="eyebrow" class="sr-only">{{ eyebrow }}</h2>
 
         <p
           ref="content"
-          class="manifesto-text font-display tracking-tight leading-[1.15] text-[clamp(1.5rem,4.5vw,4.5rem)]"
+          class="manifesto-text font-display tracking-tight leading-[1.15] text-[clamp(1.5rem,4.5vw,4.5rem)] max-w-6xl"
         >
           <span
             v-for="(w, i) in words"
@@ -104,22 +93,23 @@ onMounted(() => {
           >{{ w.text }}<template v-if="i < words.length - 1">&nbsp;</template></span>
         </p>
 
-        <div
+        <p
           v-if="signature"
-          class="mt-12 md:mt-16 flex items-center gap-4 text-[10px] uppercase tracking-[0.32em] text-white/55"
+          class="mt-12 md:mt-16 flex items-center gap-4 mono-s text-muted"
         >
-          <span class="w-8 h-px bg-current opacity-60" />
-          <span class="font-display">{{ signature }}</span>
-        </div>
+          <span class="w-8 h-px bg-current" aria-hidden="true" />
+          <span>{{ signature }}</span>
+        </p>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.manifesto-section {
-  /* 200vh of scroll distance for the pin */
-  min-height: 200vh;
+/* Mobile: plain, fully readable block. md+: 200vh of scroll distance for
+   the sticky pin (dropped again under reduced motion). */
+@media (min-width: 768px) {
+  .manifesto-section { min-height: 200vh; }
 }
 
 .m-word {
@@ -127,14 +117,11 @@ onMounted(() => {
   will-change: opacity, color;
 }
 
-/* Initial paint state — JS overrides via gsap.set after mount, but this
-   prevents a flash before hydration if JS is slow. */
-.m-word { opacity: 0.18; }
-.m-word.is-accent { color: rgba(255, 255, 255, 0.6); }
+/* SSR / no-JS default is the final, fully lit state. Words are only dimmed
+   once the scroll animation sets up (gsap.set inline styles). */
+.m-word.is-accent { color: var(--color-accent, #c0caf5); }
 
 @media (prefers-reduced-motion: reduce) {
-  .m-word { opacity: 1; }
-  .m-word.is-accent { color: var(--color-accent, #c0caf5); }
   .manifesto-section { min-height: auto; }
 }
 </style>

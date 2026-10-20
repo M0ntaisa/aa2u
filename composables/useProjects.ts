@@ -1,4 +1,5 @@
-import type { Project } from '~/types/content'
+import type { Project, ProjectRow } from '~/types/content'
+import { PROJECT_LIST_SELECT, mapProjectRow } from '~/utils/project-mapper'
 
 interface UseProjectsOpts {
   featured?: boolean
@@ -7,7 +8,8 @@ interface UseProjectsOpts {
 /**
  * List published projects. Pass { featured: true } to get only homepage
  * showcase items. Returns useAsyncData ref — reactive across i18n and
- * route changes.
+ * route changes. List rows skip chapter_text, drawings and materials;
+ * use useProject() for the full dossier.
  */
 export const useProjects = (opts: UseProjectsOpts = {}) => {
   const key = `projects:${opts.featured ? 'featured' : 'all'}`
@@ -23,13 +25,7 @@ export const useProjects = (opts: UseProjectsOpts = {}) => {
     const supabase = useSupabaseClient()
     let query = supabase
       .from('projects')
-      .select(`
-        slug, title, year, location, status, partners,
-        description, process_note, services_performed,
-        cover_image, sort_order, is_featured,
-        category:categories(slug, name),
-        images:project_images(url, alt, caption, sort_order)
-      `)
+      .select(PROJECT_LIST_SELECT)
       .eq('status', 'published')
       .order('sort_order', { ascending: true })
 
@@ -38,30 +34,6 @@ export const useProjects = (opts: UseProjectsOpts = {}) => {
     const { data, error } = await query
     if (error) throw error
 
-    return (data ?? []).map(mapProject)
+    return ((data ?? []) as unknown as ProjectRow[]).map(mapProjectRow)
   })
-}
-
-function mapProject(row: any): Project {
-  return {
-    slug: row.slug,
-    title: row.title,
-    year: row.year ?? undefined,
-    location: row.location ?? undefined,
-    category: row.category
-      ? { slug: row.category.slug, name: row.category.name }
-      : undefined,
-    status: row.status,
-    partners: row.partners ?? [],
-    description: row.description ?? undefined,
-    process_note: row.process_note ?? undefined,
-    services_performed: row.services_performed ?? undefined,
-    cover_image: row.cover_image ?? '',
-    sort_order: row.sort_order,
-    is_featured: row.is_featured,
-    images: (row.images ?? [])
-      .slice()
-      .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-      .map((i: any) => ({ url: i.url, alt: i.alt ?? undefined, caption: i.caption ?? undefined })),
-  }
 }

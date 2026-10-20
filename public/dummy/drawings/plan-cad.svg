@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <!-- Placeholder black-on-white CAD export: use with invert: true -->
+  <rect width="1200" height="800" fill="#fff"/>
+  <g fill="none" stroke="#000" stroke-width="2" stroke-linecap="square">
+    <rect x="160" y="160" width="880" height="480" stroke-width="6"/>
+    <path d="M440 160v480M760 160v240M760 480v160M160 420h280M760 400h280"/>
+    <path d="M440 520a70 70 0 0 1 70 70" stroke-width="1"/>
+    <rect x="200" y="200" width="200" height="160" stroke-width="1" stroke-dasharray="8 6"/>
+  </g>
+</svg>

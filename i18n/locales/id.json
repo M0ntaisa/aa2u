@@ -7,7 +7,10 @@
     "index": "Indeks",
     "viewing": "Melihat",
     "menu": "Menu",
-    "close": "Tutup"
+    "close": "Tutup",
+    "studio_time": "Waktu studio",
+    "switch_to": "Ganti ke {lang}",
+    "home": "Beranda"
   },
   "footer": {
     "tagline": "Arsitektur tanpa kompromi",
@@ -17,27 +20,51 @@
     "write_us": "Tulis",
     "studio": "Studio",
     "contact": "Kontak",
-    "elsewhere": "Lainnya",
     "built_with": "Dibangun dengan presisi",
     "newsletter_heading": "Ikuti jurnal studio dan pembaruan proyek kami.",
     "newsletter_placeholder": "Alamat email",
     "newsletter_submit": "Kirim",
     "newsletter_success": "Terima kasih — kami akan kabari segera.",
     "newsletter_error": "Terjadi kesalahan. Coba lagi.",
-    "head_office": "Kantor pusat",
     "email_us": "Email",
     "call_us": "Telepon",
-    "sitemap": "Sitemap"
+    "sitemap": "Sitemap",
+    "nav_label": "Footer",
+    "tb_studio": "Studio",
+    "tb_address": "Alamat",
+    "tb_coord": "Koord.",
+    "tb_contact": "Kontak",
+    "tb_sheet": "Lembar",
+    "tb_scale": "Skala NTS"
   },
   "home": {
     "seo_title": "AA2U Arsitektur",
     "seo_description": "Studio arsitektur yang menggabungkan presisi, metode, dan kreativitas.",
     "studio_name": "AA2U",
     "intro": "Studio arsitektur yang berfokus pada desain presisi, metodologi BIM, dan kreativitas tanpa batas.",
-    "scroll_hint": "Gulir untuk menjelajah",
     "featured_eyebrow": "Karya Pilihan",
     "featured_heading": "Proyek yang membentuk cara kami berpikir.",
-    "manifesto_eyebrow": "Manifesto"
+    "manifesto_eyebrow": "Manifesto",
+    "featured_count": "{n} proyek",
+    "hero": {
+      "label": "Proyek unggulan",
+      "carousel": "korsel",
+      "view_project": "Lihat proyek",
+      "view_project_named": "Lihat proyek: {title}",
+      "pause": "Jeda tayangan",
+      "play": "Putar tayangan",
+      "prev": "Proyek sebelumnya",
+      "next": "Proyek berikutnya",
+      "announce": "Proyek {n} dari {total}: {title}",
+      "light": {
+        "night": "Malam",
+        "dawn": "Cahaya fajar",
+        "morning": "Cahaya pagi",
+        "midday": "Cahaya siang",
+        "afternoon": "Cahaya sore",
+        "dusk": "Senja"
+      }
+    }
   },
   "work": {
     "eyebrow": "Karya",
@@ -53,16 +80,62 @@
     "clear_filters": "Hapus filter",
     "showing": "Menampilkan",
     "of": "dari",
-    "no_results": "Tidak ada proyek yang cocok dengan filter."
+    "filter_category": "Saring menurut kategori",
+    "filter_year": "Saring menurut tahun",
+    "loading": "Memuat proyek",
+    "error": "Proyek tidak dapat dimuat.",
+    "retry": "Coba lagi",
+    "result_count": "{n} proyek",
+    "no_match": "Tidak ada proyek yang cocok dengan “{filters}”.",
+    "view": {
+      "label": "Tampilan proyek",
+      "index": "Indeks",
+      "atlas": "Atlas",
+      "map": "Peta"
+    },
+    "index": {
+      "caption": "Proyek, {n} hasil",
+      "no": "No",
+      "project": "Proyek",
+      "status": "Status",
+      "na": "tidak tersedia"
+    },
+    "status": {
+      "concept": "Konsep",
+      "design": "Desain",
+      "construction": "Konstruksi",
+      "completed": "Selesai",
+      "unbuilt": "Tidak dibangun"
+    },
+    "map": {
+      "fig": "Gbr. M1",
+      "caption": "Peta {n} proyek; daftar menyertai peta",
+      "inset_default": "Detail · Jawa–Bali 105°–116°BT",
+      "inset_zoomed": "Detail · {range}",
+      "reset": "Kembalikan detail",
+      "show_full": "Tampilkan seluruh Indonesia",
+      "show_inset": "Tampilkan Jawa–Bali",
+      "list_label": "Proyek di peta",
+      "not_mapped": "Tidak dipetakan",
+      "cluster": "{n} proyek di sekitar {place}. Perbesar detail peta",
+      "regions": {
+        "sumatra": "Sumatra",
+        "java": "Jawa",
+        "bali": "Bali",
+        "nusa_tenggara": "Nusa Tenggara",
+        "kalimantan": "Kalimantan",
+        "sulawesi": "Sulawesi",
+        "maluku": "Maluku",
+        "papua": "Papua",
+        "other": "Lainnya"
+      }
+    }
   },
   "project": {
     "location": "Lokasi",
     "year": "Tahun",
     "type": "Tipe",
-    "partners": "Kolaborator",
-    "what_we_did": "Yang kami kerjakan",
-    "next": "Proyek berikutnya",
-    "view": "Lihat"
+    "what_we_did": "Yang kami kerjakan"
   },
   "about": {
     "eyebrow": "Tentang",
@@ -95,6 +168,7 @@
     "description": "Hubungi AA2U untuk konsultasi proyek arsitektur Anda.",
     "studio": "Studio",
     "phone": "Telepon",
+    "email": "Email",
     "socials": "Media Sosial",
     "form": {
       "name": "Nama",
@@ -105,7 +179,78 @@
       "send": "Kirim",
       "sending": "Mengirim…",
       "success": "Terima kasih, kami akan segera menghubungi Anda.",
-      "error": "Terjadi kesalahan, silakan coba lagi."
+      "error": "Terjadi kesalahan, silakan coba lagi.",
+      "rate_limited": "Terlalu banyak percobaan. Silakan coba lagi dalam beberapa menit.",
+      "invalid": "Periksa kembali isian formulir Anda."
     }
+  },
+  "cursor": {
+    "open": "Buka proyek"
+  },
+  "dossier": {
+    "aside": "Fakta proyek",
+    "facts_title": "Lembar fakta",
+    "facts_count": "Lembar fakta ({n})",
+    "facts": {
+      "location": "Lokasi",
+      "coordinates": "Koordinat",
+      "year": "Tahun",
+      "status": "Status",
+      "typology": "Tipologi",
+      "site_area": "Luas lahan",
+      "built_area": "Luas bangunan",
+      "client": "Klien",
+      "team": "Tim",
+      "partners": "Bersama",
+      "photographer": "Fotografi"
+    },
+    "status": {
+      "concept": "Konsep",
+      "design": "Desain",
+      "construction": "Dalam konstruksi",
+      "completed": "Selesai",
+      "unbuilt": "Tidak dibangun"
+    },
+    "opens_map": "(membuka peta di tab baru)",
+    "dms": "{d} derajat {m} menit {dir}",
+    "dir": {
+      "N": "lintang utara",
+      "S": "lintang selatan",
+      "E": "bujur timur",
+      "W": "bujur barat"
+    },
+    "chapters": "Bab",
+    "chapter_current": "Bab saat ini",
+    "chapter": {
+      "site": "Tapak",
+      "concept": "Konsep",
+      "plan": "Denah",
+      "section": "Potongan",
+      "material": "Material",
+      "built": "Terbangun"
+    },
+    "fig": "Gbr. {n}",
+    "fig_alt": "{title}, gambar {n}",
+    "enlarge": "Perbesar gambar {n}",
+    "enlarge_cursor": "Perbesar",
+    "kind": {
+      "site_plan": "Rencana tapak",
+      "plan": "Denah",
+      "section": "Potongan",
+      "elevation": "Tampak",
+      "diagram": "Diagram",
+      "axonometric": "Aksonometri"
+    },
+    "lightbox": {
+      "label": "Penampil gambar",
+      "close": "Tutup",
+      "prev": "Gambar sebelumnya",
+      "next": "Gambar berikutnya",
+      "counter": "Gambar {i} dari {n}"
+    },
+    "next": "Berikutnya",
+    "next_aria": "Proyek berikutnya: {title}",
+    "next_cursor": "Proyek berikutnya",
+    "loading": "Memuat proyek"
   }
 }

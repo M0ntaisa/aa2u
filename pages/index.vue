@@ -2,22 +2,29 @@
 const { t } = useI18n()
 const tt = useT()
 
-const { data: projects } = await useProjects({ featured: true })
+const { data: featured } = await useProjects({ featured: true })
 const { data: site } = await useSiteSettings()
+
+// Hero falls back to the first published project when nothing is featured.
+const fallback = featured.value?.length ? null : await useProjects()
+const heroProjects = computed(() =>
+  featured.value?.length
+    ? featured.value
+    : (fallback?.data.value ?? []).slice(0, 1),
+)
 
 useSiteSeo({
   title: () => t('home.seo_title'),
   description: () => t('home.seo_description'),
-  image: () => projects.value?.[0]?.cover_image,
+  image: () => heroProjects.value[0]?.cover_image,
 })
 </script>
 
 <template>
   <div>
     <HeroIntro
-      :studio-name="site?.studio_name || 'AA2U'"
-      :scroll-hint="t('home.scroll_hint')"
-      :projects="projects ?? []"
+      :intro="t('home.intro')"
+      :projects="heroProjects"
     />
 
     <ManifestoSection
@@ -28,8 +35,8 @@ useSiteSeo({
     />
 
     <ProjectShowcase
-      v-if="projects?.length"
-      :projects="projects"
+      v-if="featured?.length"
+      :projects="featured"
       :eyebrow="t('home.featured_eyebrow')"
       :heading="t('home.featured_heading')"
     />

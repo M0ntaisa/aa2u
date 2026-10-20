@@ -9,6 +9,12 @@ const props = withDefaults(defineProps<{
   accept?: string[]
   aspect?: string
   hint?: string
+  /** Extra check run AFTER the type/size check (so huge files are never read), e.g. SVG sanitising. */
+  validateFile?: (file: File) => string | null | Promise<string | null>
+  /** Specific message for a rejected MIME type, e.g. { 'application/pdf': 'Ekspor ke PNG dulu' }. */
+  typeHints?: Record<string, string>
+  /** Preview fit: 'cover' for photos, 'contain' for drawings. */
+  fit?: 'cover' | 'contain'
 }>(), {
   label: 'Gambar',
   folder: '',
@@ -16,6 +22,9 @@ const props = withDefaults(defineProps<{
   accept: () => ['image/jpeg', 'image/png', 'image/webp'],
   aspect: 'aspect-[16/9]',
   hint: '',
+  validateFile: undefined,
+  typeHints: () => ({}),
+  fit: 'cover',
 })
 
 const emit = defineEmits<{
@@ -67,6 +76,9 @@ function onDragLeave() {
 
 function validate(file: File): string | null {
   if (!props.accept.includes(file.type)) {
+    const hint = props.typeHints[file.type]
+      ?? (/\.pdf$/i.test(file.name) ? props.typeHints['application/pdf'] : undefined)
+    if (hint) return hint
     return `Format tidak didukung. Pakai: ${props.accept.map(a => a.split('/')[1]).join(', ')}`
   }
   if (file.size > maxBytes.value) {
@@ -85,7 +97,7 @@ function makeFilename(file: File): string {
 async function upload(file: File) {
   errorMessage.value = ''
 
-  const validationError = validate(file)
+  const validationError = validate(file) || (await props.validateFile?.(file)) || null
   if (validationError) {
     status.value = 'error'
     errorMessage.value = validationError
@@ -138,7 +150,7 @@ function remove() {
         :class="aspect"
         class="max-w-md overflow-hidden rounded-[var(--ad-radius-sm)] border border-[var(--ad-border)] bg-[var(--ad-surface-sunk)]"
       >
-        <img :src="previewUrl" :alt="label" class="h-full w-full object-cover" />
+        <img :src="previewUrl" :alt="label" class="h-full w-full" :class="fit === 'contain' ? 'object-contain' : 'object-cover'" />
       </div>
       <div class="flex items-center gap-2">
         <AdminButton

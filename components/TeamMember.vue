@@ -11,23 +11,23 @@ const t = useT()
 
 <template>
   <div class="group">
-    <div class="relative overflow-hidden aspect-[4/5] bg-[var(--color-muted)]/10">
+    <div class="relative overflow-hidden aspect-[4/5] hatch">
       <NuxtImg
         v-if="props.member.photo_url"
         :src="props.member.photo_url"
         :alt="props.member.name"
-        sizes="(max-width: 768px) 50vw, 25vw"
+        sizes="sm:50vw md:25vw lg:20vw xl:20vw 2xl:20vw"
         loading="lazy"
         format="webp"
-        class="w-full h-full object-cover transition-transform duration-[1000ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+        class="w-full h-full object-cover"
       />
-      <span class="absolute top-3 left-3 text-xs tracking-[0.25em] text-white mix-blend-difference">
+      <span class="absolute top-0 left-0 px-2.5 py-1.5 mono-s bg-[var(--color-bg)]">
         N°{{ String(props.index + 1).padStart(2, '0') }}
       </span>
     </div>
     <div class="mt-4">
       <h4 class="font-display text-xl tracking-tight">{{ props.member.name }}</h4>
-      <p class="mt-1 text-sm text-[var(--color-muted)]">{{ t(props.member.role) }}</p>
+      <p class="mt-1 mono-s text-muted">{{ t(props.member.role) }}</p>
     </div>
   </div>
 </template>

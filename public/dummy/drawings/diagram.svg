@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="square">
+  <!-- Placeholder axonometric diagram -->
+  <path d="M500 200l300 170v300l-300 170-300-170v-300z" stroke-width="4"/>
+  <path d="M200 370l300 170 300-170M500 540v300" stroke-width="2"/>
+  <path d="M500 200v-80M800 370l70 -40M200 370l-70 -40" stroke-width="1" stroke-dasharray="8 6"/>
+  <path d="M350 455l300 -170" stroke-width="1" opacity=".6"/>
+</svg>

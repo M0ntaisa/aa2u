@@ -117,6 +117,14 @@ async function saveRow(row: TeamRow) {
     row._error = 'Peran (ID) wajib diisi.'
     return
   }
+  // Socials render as public hrefs — only accept http(s) links.
+  const badSocial = [row.social_linkedin, row.social_instagram]
+    .find((url) => url.trim() && !isHttpUrl(url))
+  if (badSocial) {
+    row._error = 'Tautan sosial harus diawali http:// atau https://.'
+    toast.error('Belum bisa disimpan', row._error)
+    return
+  }
 
   row._saving = true
   row._error = ''
@@ -126,8 +134,8 @@ async function saveRow(row: TeamRow) {
     role: row.role,
     bio: row.bio,
     photo_url: row.photo_url || null,
-    social_linkedin: row.social_linkedin || null,
-    social_instagram: row.social_instagram || null,
+    social_linkedin: row.social_linkedin.trim() || null,
+    social_instagram: row.social_instagram.trim() || null,
     is_active: row.is_active,
     sort_order: row.sort_order,
   }

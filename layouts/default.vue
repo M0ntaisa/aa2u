@@ -5,14 +5,15 @@
   <div class="min-h-screen flex flex-col">
     <IntroCurtain />
 
+    <!-- Decorative hairline column grid ("the sheet"), behind content. -->
+    <SheetGrid />
+
     <SiteHeader />
 
-    <main class="flex-1">
+    <main class="relative z-[1] flex-1">
       <slot />
     </main>
 
     <SiteFooter />
-
-    <div class="grain-overlay" aria-hidden="true" />
   </div>
 </template>

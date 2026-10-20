@@ -7,6 +7,10 @@ const props = defineProps<{
   eyebrow?: string
 }>()
 
+// Ruler callout: how many sheets this set spans, e.g. "├── 07 PROJECTS ──┤".
+const { t } = useI18n()
+const dim = computed(() => `├── ${t('home.featured_count', { n: String(props.projects.length).padStart(2, '0') })} ──┤`)
+
 const root  = ref<HTMLElement | null>(null)
 const inner = ref<HTMLElement | null>(null)
 const track = ref<HTMLElement | null>(null)
@@ -95,18 +99,16 @@ onMounted(() => {
       ref="inner"
       class="flex flex-col md:sticky md:top-0 md:h-screen md:overflow-hidden"
     >
-      <div class="px-6 pt-16 md:pt-20 mb-8 md:mb-10 flex flex-col gap-2 max-w-2xl">
-        <span v-if="eyebrow" class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)]">
-          {{ eyebrow }}
-        </span>
-        <h2 v-if="heading" class="font-display text-2xl md:text-4xl tracking-tight leading-[1.1]">
+      <div class="sheet-wrap pt-16 md:pt-20 mb-8 md:mb-10">
+        <SheetRuler sheet="A-01.2" :label="eyebrow" :dim="dim" class="mb-6 md:mb-8" />
+        <h2 v-if="heading" class="font-display display-l max-w-2xl">
           {{ heading }}
         </h2>
       </div>
 
       <div
         ref="track"
-        class="flex flex-col gap-10 px-6 w-full max-w-full md:w-auto md:max-w-none md:flex-row md:gap-10 md:pl-6 md:pr-[10vw] md:items-start md:flex-1 will-change-transform"
+        class="showcase-track flex flex-col gap-10 w-full max-w-full md:w-auto md:max-w-none md:flex-row md:gap-10 md:items-start md:flex-1 will-change-transform"
       >
         <ProjectCard
           v-for="(p, i) in projects"
@@ -119,3 +121,17 @@ onMounted(() => {
     </div>
   </section>
 </template>
+
+<style scoped>
+/* Track starts on the first sheet hairline, like the heading above it. */
+.showcase-track {
+  padding-left: var(--sheet-margin);
+  padding-right: var(--sheet-margin);
+}
+@media (min-width: 768px) {
+  .showcase-track { padding-right: 10vw; }
+}
+@media (min-width: 1664px) {
+  .showcase-track { padding-left: calc((100vw - var(--sheet-max)) / 2 + var(--sheet-margin)); }
+}
+</style>

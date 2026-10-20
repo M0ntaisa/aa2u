@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="square">
+  <!-- Placeholder plan: white lines on transparent -->
+  <rect x="140" y="140" width="920" height="520" stroke-width="6"/>
+  <path d="M480 140v300M480 520v140M760 140v200M760 420v240M140 400h200M420 400h60M760 380h300"/>
+  <path d="M480 440a80 80 0 0 1 80 80" stroke-width="1"/>
+  <path d="M760 340a80 80 0 0 0 80 80" stroke-width="1"/>
+  <path d="M220 140v-30M340 140v-30M900 140v-30" stroke-width="1"/>
+  <path d="M140 700h920M140 690v20M480 690v20M760 690v20M1060 690v20" stroke-width="1"/>
+  <g stroke-width="1" opacity=".6"><path d="M180 180l260 180M440 180l-260 180"/></g>
+  <rect x="820" y="460" width="180" height="140" stroke-width="1" stroke-dasharray="8 6"/>
+</svg>

@@ -22,7 +22,7 @@ const ADMIN_ENTER_DURATION = 0.16
 export const usePageTransition = () => {
   const { isActive: flipIsActive } = useSharedFlip()
   const route = useRoute()
-  const isAdmin = () => route.path.includes('/admin')
+  const isAdmin = () => isAdminPath(route.path)
 
   function onLeave(el: Element, done: () => void) {
     const { $gsap } = useNuxtApp() as any

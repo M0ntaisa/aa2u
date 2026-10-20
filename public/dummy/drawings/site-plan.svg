@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="square">
+  <!-- Placeholder site plan: plot boundary, building footprint, contours, north arrow -->
+  <path d="M120 120h960v560h-960z" stroke-dasharray="14 8"/>
+  <rect x="420" y="280" width="360" height="220" stroke-width="5"/>
+  <path d="M120 600c200 -40 400 -20 600 -80s240 -120 360 -140" stroke-width="1"/>
+  <path d="M120 640c220 -30 420 -10 620 -70s240 -110 340 -130" stroke-width="1"/>
+  <path d="M1020 200l20 -60 20 60M1040 140v90" stroke-width="2"/>
+  <circle cx="240" cy="220" r="40" stroke-width="1"/><circle cx="960" cy="560" r="30" stroke-width="1"/>
+</svg>

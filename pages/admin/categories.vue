@@ -187,7 +187,7 @@ async function removeRow(row: CategoryRow) {
               <input
                 v-model="row.slug"
                 type="text"
-                pattern="[a-z0-9-]+"
+                pattern="[a-z0-9\-]+"
                 placeholder="residensial"
                 class="ad-input"
               />

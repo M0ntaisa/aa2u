@@ -7,9 +7,9 @@ defineProps<{
 </script>
 
 <template>
-  <article class="grid md:grid-cols-12 gap-6 md:gap-12 py-16 md:py-24 border-t border-white/10">
+  <article class="grid md:grid-cols-12 gap-6 md:gap-12 py-16 md:py-24 border-t border-line">
     <div class="md:col-span-3">
-      <div class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)]">
+      <div class="mono-s text-muted">
         N°{{ number }}
       </div>
     </div>
@@ -17,7 +17,7 @@ defineProps<{
       <h3 class="font-display text-3xl md:text-5xl tracking-tight leading-[1.05] mb-6">
         {{ heading }}
       </h3>
-      <p class="text-lg md:text-xl text-[var(--color-muted)] leading-relaxed max-w-3xl">
+      <p class="text-lg md:text-xl text-fg-2 leading-relaxed max-w-3xl">
         {{ body }}
       </p>
     </div>

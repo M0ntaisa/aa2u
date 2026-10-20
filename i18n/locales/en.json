@@ -7,7 +7,10 @@
     "index": "Index",
     "viewing": "Viewing",
     "menu": "Menu",
-    "close": "Close"
+    "close": "Close",
+    "studio_time": "Studio time",
+    "switch_to": "Switch to {lang}",
+    "home": "Home"
   },
   "footer": {
     "tagline": "Architecture without compromise",
@@ -17,27 +20,51 @@
     "write_us": "Write",
     "studio": "Studio",
     "contact": "Contact",
-    "elsewhere": "Elsewhere",
     "built_with": "Built with precision",
     "newsletter_heading": "Follow our studio journal and project updates.",
     "newsletter_placeholder": "Email address",
     "newsletter_submit": "Send",
     "newsletter_success": "Thank you — we'll be in touch shortly.",
     "newsletter_error": "Something went wrong. Try again.",
-    "head_office": "Head office",
     "email_us": "Email us",
     "call_us": "Call us",
-    "sitemap": "Sitemap"
+    "sitemap": "Sitemap",
+    "nav_label": "Footer",
+    "tb_studio": "Studio",
+    "tb_address": "Address",
+    "tb_coord": "Coord.",
+    "tb_contact": "Contact",
+    "tb_sheet": "Sheet",
+    "tb_scale": "Scale NTS"
   },
   "home": {
     "seo_title": "AA2U Architecture Studio",
     "seo_description": "An architecture studio combining precision, method, and creativity.",
     "studio_name": "AA2U",
     "intro": "An architecture studio focused on precision design, BIM methodology, and uncompromising creativity.",
-    "scroll_hint": "Scroll to discover",
     "featured_eyebrow": "Selected Work",
     "featured_heading": "Projects that shape the way we think.",
-    "manifesto_eyebrow": "Manifesto"
+    "manifesto_eyebrow": "Manifesto",
+    "featured_count": "{n} projects",
+    "hero": {
+      "label": "Featured projects",
+      "carousel": "carousel",
+      "view_project": "View project",
+      "view_project_named": "View project: {title}",
+      "pause": "Pause slideshow",
+      "play": "Play slideshow",
+      "prev": "Previous project",
+      "next": "Next project",
+      "announce": "Project {n} of {total}: {title}",
+      "light": {
+        "night": "Night",
+        "dawn": "Dawn light",
+        "morning": "Morning light",
+        "midday": "Midday light",
+        "afternoon": "Afternoon light",
+        "dusk": "Dusk"
+      }
+    }
   },
   "work": {
     "eyebrow": "Work",
@@ -53,16 +80,62 @@
     "clear_filters": "Clear filters",
     "showing": "Showing",
     "of": "of",
-    "no_results": "No projects match the current filters."
+    "filter_category": "Filter by category",
+    "filter_year": "Filter by year",
+    "loading": "Loading projects",
+    "error": "The projects could not be loaded.",
+    "retry": "Try again",
+    "result_count": "No projects | {n} project | {n} projects",
+    "no_match": "No projects match “{filters}”.",
+    "view": {
+      "label": "Project view",
+      "index": "Index",
+      "atlas": "Atlas",
+      "map": "Map"
+    },
+    "index": {
+      "caption": "Projects, {n} results | Projects, {n} result | Projects, {n} results",
+      "no": "No",
+      "project": "Project",
+      "status": "Status",
+      "na": "not available"
+    },
+    "status": {
+      "concept": "Concept",
+      "design": "Design",
+      "construction": "Construction",
+      "completed": "Completed",
+      "unbuilt": "Unbuilt"
+    },
+    "map": {
+      "fig": "Fig. M1",
+      "caption": "Map of {n} projects; list follows | Map of {n} project; list follows | Map of {n} projects; list follows",
+      "inset_default": "Inset · Java–Bali 105°–116°E",
+      "inset_zoomed": "Inset · {range}",
+      "reset": "Reset inset",
+      "show_full": "Show all Indonesia",
+      "show_inset": "Show Java–Bali",
+      "list_label": "Projects on the map",
+      "not_mapped": "Not mapped",
+      "cluster": "{n} projects near {place}. Zoom the inset",
+      "regions": {
+        "sumatra": "Sumatra",
+        "java": "Java",
+        "bali": "Bali",
+        "nusa_tenggara": "Nusa Tenggara",
+        "kalimantan": "Kalimantan",
+        "sulawesi": "Sulawesi",
+        "maluku": "Maluku",
+        "papua": "Papua",
+        "other": "Other"
+      }
+    }
   },
   "project": {
     "location": "Location",
     "year": "Year",
     "type": "Type",
-    "partners": "Partners",
-    "what_we_did": "What we did",
-    "next": "Next project",
-    "view": "View"
+    "what_we_did": "What we did"
   },
   "about": {
     "eyebrow": "About",
@@ -95,6 +168,7 @@
     "description": "Contact AA2U to discuss your architecture project.",
     "studio": "Studio",
     "phone": "Phone",
+    "email": "Email",
     "socials": "Socials",
     "form": {
       "name": "Name",
@@ -105,7 +179,78 @@
       "send": "Send",
       "sending": "Sending…",
       "success": "Thank you — we'll be in touch shortly.",
-      "error": "Something went wrong. Please try again."
+      "error": "Something went wrong. Please try again.",
+      "rate_limited": "Too many attempts. Please try again in a few minutes.",
+      "invalid": "Please check the form fields and try again."
     }
+  },
+  "cursor": {
+    "open": "Open project"
+  },
+  "dossier": {
+    "aside": "Project facts",
+    "facts_title": "Fact sheet",
+    "facts_count": "Fact sheet ({n})",
+    "facts": {
+      "location": "Location",
+      "coordinates": "Coordinates",
+      "year": "Year",
+      "status": "Status",
+      "typology": "Typology",
+      "site_area": "Site area",
+      "built_area": "Built area",
+      "client": "Client",
+      "team": "Team",
+      "partners": "With",
+      "photographer": "Photography"
+    },
+    "status": {
+      "concept": "Concept",
+      "design": "Design",
+      "construction": "Under construction",
+      "completed": "Completed",
+      "unbuilt": "Unbuilt"
+    },
+    "opens_map": "(opens map in new tab)",
+    "dms": "{d} degrees {m} minutes {dir}",
+    "dir": {
+      "N": "north",
+      "S": "south",
+      "E": "east",
+      "W": "west"
+    },
+    "chapters": "Chapters",
+    "chapter_current": "Current chapter",
+    "chapter": {
+      "site": "Site",
+      "concept": "Concept",
+      "plan": "Plan",
+      "section": "Section",
+      "material": "Material",
+      "built": "Built"
+    },
+    "fig": "Fig. {n}",
+    "fig_alt": "{title}, figure {n}",
+    "enlarge": "Enlarge figure {n}",
+    "enlarge_cursor": "Enlarge",
+    "kind": {
+      "site_plan": "Site plan",
+      "plan": "Plan",
+      "section": "Section",
+      "elevation": "Elevation",
+      "diagram": "Diagram",
+      "axonometric": "Axonometric"
+    },
+    "lightbox": {
+      "label": "Image viewer",
+      "close": "Close",
+      "prev": "Previous image",
+      "next": "Next image",
+      "counter": "Image {i} of {n}"
+    },
+    "next": "Next",
+    "next_aria": "Next project: {title}",
+    "next_cursor": "Next project",
+    "loading": "Loading project"
   }
 }

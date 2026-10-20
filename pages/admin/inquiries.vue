@@ -148,10 +148,17 @@ async function remove(inquiry: Inquiry) {
   if (!ok) return
   if (isPlaceholder) return
 
-  const { error } = await supabase.from('inquiries').delete().eq('id', inquiry.id)
-  if (error) {
-    errorMessage.value = error.message
-    toast.error('Gagal menghapus', error.message)
+  // .select() returns the deleted rows, so an RLS-blocked delete
+  // (0 rows, no error) is detected instead of silently "succeeding".
+  const { data, error } = await supabase
+    .from('inquiries')
+    .delete()
+    .eq('id', inquiry.id)
+    .select('id')
+  if (error || !data?.length) {
+    const message = error?.message || 'Pesan tidak terhapus — periksa izin admin.'
+    errorMessage.value = message
+    toast.error('Gagal menghapus', message)
     return
   }
   items.value = items.value.filter(i => i.id !== inquiry.id)

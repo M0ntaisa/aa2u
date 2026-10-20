@@ -108,6 +108,15 @@ async function save() {
     toast.error('Belum bisa disimpan', errorMessage.value)
     return
   }
+  // Socials end up as public hrefs — only accept http(s) links.
+  const badSocial = (Object.entries(form.value.socials) as [string, string][])
+    .find(([, url]) => url.trim() && !isHttpUrl(url))
+  if (badSocial) {
+    status.value = 'error'
+    errorMessage.value = `Tautan ${badSocial[0]} harus diawali http:// atau https://.`
+    toast.error('Belum bisa disimpan', errorMessage.value)
+    return
+  }
 
   status.value = 'saving'
   errorMessage.value = ''
@@ -121,9 +130,9 @@ async function save() {
     contact_phone: form.value.contact_phone || null,
     address: form.value.address,
     socials: {
-      instagram: form.value.socials.instagram || undefined,
-      linkedin: form.value.socials.linkedin || undefined,
-      behance: form.value.socials.behance || undefined,
+      instagram: form.value.socials.instagram.trim() || undefined,
+      linkedin: form.value.socials.linkedin.trim() || undefined,
+      behance: form.value.socials.behance.trim() || undefined,
     },
   }
 

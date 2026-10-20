@@ -8,7 +8,8 @@ dist
 
 # Node dependencies
 node_modules
-supabase
+supabase/.temp
+supabase/.branches
 
 # Logs
 logs

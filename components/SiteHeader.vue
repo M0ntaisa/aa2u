@@ -1,54 +1,43 @@
 <script setup lang="ts">
+import type { Project } from '~/types/content'
+
 /**
  * Augmented architectural header — two-row bar (meta + nav) with live
- * Jakarta time, active-section parens, and a page index counter.
- * Collapses to a single bar + slide-down drawer on mobile.
+ * Jakarta time (signal-orange "live" dot), active-section parens, and a
+ * page index counter. Metadata is set in the mono. Collapses to a single
+ * bar + slide-down drawer on mobile.
+ *
+ * Sits over the true-colour hero on a top scrim (no blend modes, so text
+ * contrast is predictable); turns solid --bg with a hairline once scrolled.
  */
 
 const { locale, setLocale, t } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
 
+// The clock always shows studio time (Jakarta), not the visitor's own zone.
+const studioCity = 'Jakarta'
+
 const time = ref('')
-const city = ref('')
-const gmt = ref('')
-let userTz = 'Asia/Jakarta'
+const solid = ref(false)
 let timer: ReturnType<typeof setInterval> | null = null
 
-function detectLocation() {
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-    if (tz) userTz = tz
-    const last = userTz.split('/').pop() ?? userTz
-    city.value = last.replace(/_/g, ' ')
-
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: userTz,
-      timeZoneName: 'shortOffset',
-    }).formatToParts(new Date())
-    gmt.value = parts.find((p) => p.type === 'timeZoneName')?.value ?? ''
-  } catch {
-    city.value = 'Jakarta'
-    gmt.value = 'GMT+7'
-  }
-}
-
 function updateTime() {
-  time.value = new Intl.DateTimeFormat('en-GB', {
-    timeZone: userTz,
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-  }).format(new Date())
+  time.value = studioTime()
+}
+function onScroll() {
+  solid.value = window.scrollY > 24
 }
 
 onMounted(() => {
-  detectLocation()
   updateTime()
   timer = setInterval(updateTime, 30_000)
+  onScroll()
+  window.addEventListener('scroll', onScroll, { passive: true })
 })
 onBeforeUnmount(() => {
   if (timer) clearInterval(timer)
+  window.removeEventListener('scroll', onScroll)
 })
 
 const pages = [
@@ -74,12 +63,23 @@ const activePage = computed(() => {
 })
 
 const isProjectDetail = computed(() => /^\/work\/.+/.test(strippedPath.value))
+// Read the title from the page's cached useProject payload (same key) rather
+// than fetching again; fall back to the prettified slug until it's there.
+// Only switch after mount so SSR and hydration render the same text.
+const nuxtApp = useNuxtApp()
+const tt = useT()
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
 const projectLabel = computed(() => {
   const slug = String(route.params.slug ?? '')
-  return slug.replace(/-/g, ' ')
+  const cached = mounted.value
+    ? (nuxtApp.payload.data[`project:${slug}`] as Project | null | undefined)
+    : null
+  return tt(cached?.title) || slug.replace(/-/g, ' ')
 })
 
 const langs = ['id', 'en'] as const
+const langNames = { id: 'Bahasa Indonesia', en: 'English' } as const
 
 const menuOpen = ref(false)
 function toggleMenu() { menuOpen.value = !menuOpen.value }
@@ -95,34 +95,35 @@ watch(() => route.fullPath, () => closeMenu())
 
 <template>
   <header class="site-header fixed top-0 left-0 right-0 z-50">
-    <div class="site-header__inner mix-blend-difference text-white">
+    <div class="site-header__inner text-white" :class="{ 'is-solid': solid || menuOpen }">
       <!-- DESKTOP: meta row -->
-      <div class="hidden md:flex items-end justify-between px-6 pt-4 pb-2 text-[10px] uppercase tracking-[0.22em] leading-none">
-        <div class="font-display tracking-wider">
-          AA2U <span class="opacity-40 mx-0.5">·</span>
-          <span class="opacity-70">{{ t('nav.studio') }}</span>
-        </div>
+      <div class="sheet-wrap hidden md:flex items-end justify-between pt-4 pb-2 mono-s leading-none">
+        <NuxtLink :to="localePath('/')" class="font-display text-base font-semibold tracking-wide normal-case">
+          AA2U <span class="text-fg-2 font-normal mx-0.5" aria-hidden="true">·</span>
+          <span class="mono-s font-normal text-fg-2">{{ t('nav.studio') }}</span>
+        </NuxtLink>
 
-        <div class="flex items-center gap-2.5 text-white/75">
+        <div class="flex items-center gap-2.5 text-fg-2">
           <template v-if="isProjectDetail">
-            <span class="opacity-50">{{ t('nav.viewing') }} /</span>
-            <span class="text-white tracking-[0.18em]">{{ projectLabel }}</span>
+            <span>{{ t('nav.viewing') }} /</span>
+            <span class="text-white">{{ projectLabel }}</span>
           </template>
           <template v-else>
-            <span class="opacity-70">{{ city || '—' }}</span>
-            <span class="opacity-30">·</span>
-            <span class="font-mono tabular-nums text-white">{{ time || '--:--' }}</span>
-            <span class="opacity-50">{{ gmt }}</span>
+            <span class="live-dot" aria-hidden="true" />
+            <span class="sr-only">{{ t('nav.studio_time') }}, {{ studioCity }}:</span>
+            <span aria-hidden="true">JKT</span>
+            <span class="tabular-nums text-white">{{ time || '--:--' }}</span>
+            <span>WIB</span>
           </template>
         </div>
 
         <div class="flex items-center gap-2">
           <template v-for="(l, i) in langs" :key="l">
-            <span v-if="i > 0" class="opacity-30">·</span>
+            <span v-if="i > 0" class="text-fg-2" aria-hidden="true">/</span>
             <button
               class="lang-btn"
-              :class="locale === l ? 'text-white' : 'text-white/40 hover:text-white/70'"
-              :aria-label="`Switch to ${l === 'en' ? 'English' : 'Bahasa Indonesia'}`"
+              :class="locale === l ? 'text-white' : 'text-muted hover:text-white'"
+              :aria-label="t('nav.switch_to', { lang: langNames[l] })"
               :aria-current="locale === l ? 'true' : undefined"
               @click="setLocale(l)"
             >
@@ -133,11 +134,11 @@ watch(() => route.fullPath, () => closeMenu())
       </div>
 
       <!-- DESKTOP: divider -->
-      <div class="hidden md:block h-px bg-white/15 mx-6" />
+      <div class="sheet-wrap hidden md:block"><div class="h-px bg-line" /></div>
 
       <!-- DESKTOP: nav row -->
-      <div class="hidden md:flex items-center justify-between px-6 py-3 text-[12px] uppercase tracking-[0.18em]">
-        <div class="font-mono text-white/45 w-16">{{ t('nav.index') }}</div>
+      <div class="sheet-wrap hidden md:flex items-center justify-between py-3 text-[12px] uppercase tracking-[0.18em]">
+        <div class="mono-s text-muted w-16">{{ t('nav.index') }}</div>
 
         <nav class="flex items-center gap-10">
           <NuxtLink
@@ -152,20 +153,23 @@ watch(() => route.fullPath, () => closeMenu())
           </NuxtLink>
         </nav>
 
-        <div class="font-mono tabular-nums text-right w-16">
+        <div class="mono-s text-right w-16">
           <span class="text-white">{{ activePage?.index ?? '—' }}</span>
-          <span class="opacity-45"> / 0{{ total }}</span>
+          <span class="text-muted"> / 0{{ total }}</span>
         </div>
       </div>
 
       <!-- MOBILE: single bar -->
-      <div class="md:hidden flex items-center justify-between px-5 h-14 text-[11px] uppercase tracking-[0.2em]">
-        <NuxtLink :to="localePath('/')" class="font-display text-sm tracking-wider">
+      <div class="sheet-wrap md:hidden flex items-center justify-between h-14 mono-s">
+        <NuxtLink :to="localePath('/')" class="font-display text-base font-semibold tracking-wide normal-case">
           AA2U
         </NuxtLink>
-        <span class="font-mono tabular-nums text-white/65">{{ time || '--:--' }}</span>
+        <span class="flex items-center gap-2 tabular-nums text-fg-2">
+          <span class="live-dot" aria-hidden="true" />
+          <span class="sr-only">{{ t('nav.studio_time') }}, {{ studioCity }}: </span>{{ time || '--:--' }} WIB
+        </span>
         <button
-          class="flex items-center gap-1.5"
+          class="flex items-center gap-1.5 min-h-11"
           :aria-expanded="menuOpen"
           :aria-label="menuOpen ? t('nav.close') : t('nav.menu')"
           @click="toggleMenu"
@@ -178,33 +182,36 @@ watch(() => route.fullPath, () => closeMenu())
       </div>
     </div>
 
-    <!-- MOBILE: drawer (outside mix-blend wrapper so bg renders normally) -->
+    <!-- MOBILE: drawer (sibling of the bar so it can sit full-height below it) -->
     <Transition name="drawer">
       <div
         v-if="menuOpen"
         class="md:hidden fixed top-14 left-0 right-0 bottom-0 z-40 bg-[var(--color-bg)] text-white"
         @click.self="closeMenu"
       >
-        <div class="px-5 py-10 flex flex-col gap-8">
+        <div class="sheet-wrap py-10 flex flex-col gap-8">
           <NuxtLink
             v-for="(p, i) in pages.slice(1)"
             :key="p.key"
             :to="localePath(p.path)"
             class="drawer-link flex items-baseline justify-between font-display"
-            :class="activePage?.key === p.key ? 'text-white' : 'text-white/55'"
+            :class="activePage?.key === p.key ? 'text-white' : 'text-fg-2'"
             @click="closeMenu"
           >
             <span class="text-4xl">{{ t(`nav.${p.key}`) }}</span>
-            <span class="text-[10px] tracking-[0.3em] text-white/45 font-mono">0{{ i + 2 }}</span>
+            <span class="mono-s text-muted">0{{ i + 2 }}</span>
           </NuxtLink>
 
-          <div class="mt-4 pt-6 border-t border-white/10 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-white/55">
-            <span>{{ city || '—' }} · <span class="font-mono tabular-nums text-white/80">{{ time }}</span></span>
-            <div class="flex gap-2">
+          <div class="mt-4 pt-6 border-t border-line flex items-center justify-between mono-s text-fg-2">
+            <span>{{ t('nav.studio_time') }} · {{ studioCity }} · <span class="tabular-nums text-white">{{ time }}</span></span>
+            <div class="flex gap-1">
               <template v-for="(l, i) in langs" :key="l">
-                <span v-if="i > 0" class="opacity-30">·</span>
+                <span v-if="i > 0" class="text-fg-2 self-center" aria-hidden="true">/</span>
                 <button
-                  :class="locale === l ? 'text-white' : 'text-white/45'"
+                  class="min-h-11 min-w-11"
+                  :class="locale === l ? 'text-white' : 'text-muted'"
+                  :aria-label="t('nav.switch_to', { lang: langNames[l] })"
+                  :aria-current="locale === l ? 'true' : undefined"
                   @click="setLocale(l)"
                 >
                   {{ l.toUpperCase() }}
@@ -222,6 +229,39 @@ watch(() => route.fullPath, () => closeMenu())
 .site-header { pointer-events: none; }
 .site-header > * { pointer-events: auto; }
 
+/* Over a photo the bar sits on a near-opaque scrim (≥92% --bg under the
+   text, so even --muted keeps 4.5:1 on a white sky), feathering out 32px
+   below. Solid --bg with a hairline once the page scrolls. */
+.site-header__inner {
+  position: relative;
+  background: rgba(26, 27, 38, .92);
+  transition: background-color var(--d-2) var(--ease-draft), box-shadow var(--d-2) var(--ease-draft);
+}
+.site-header__inner::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 32px;
+  background: linear-gradient(rgba(26, 27, 38, .92), rgba(26, 27, 38, 0));
+  pointer-events: none;
+  transition: opacity var(--d-2) var(--ease-draft);
+}
+.site-header__inner.is-solid {
+  background: var(--color-bg);
+  box-shadow: 0 1px 0 var(--color-line);
+}
+.site-header__inner.is-solid::after { opacity: 0; }
+
+/* Live studio-clock dot — one of the four signal-orange uses (§1.1.1). */
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--color-signal);
+}
+
 .lang-btn {
   position: relative;
   transition: color 0.25s ease;
@@ -232,8 +272,8 @@ watch(() => route.fullPath, () => closeMenu())
   position: relative;
   display: inline-flex;
   align-items: center;
-  color: rgba(255, 255, 255, 0.65);
-  transition: color 0.3s ease;
+  color: var(--color-fg-2);
+  transition: color var(--d-1) var(--ease-draft);
 }
 .nav-item:hover {
   color: #fff;

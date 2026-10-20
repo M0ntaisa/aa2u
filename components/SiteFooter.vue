@@ -1,10 +1,11 @@
 <script setup lang="ts">
 /**
  * Structured closer footer.
- *   Top    : journal signup (left) + nav + socials (right)
- *   Mid    : address / email / phone meta strip
- *   Large  : giant fully-visible AA2U logotype (architectural signature)
- *   Bottom : colophon row (legal links + copyright + credit)
+ *   Top    : contact CTA (left) + nav + socials (right)
+ *   Block  : drawing title block (§2.8) — studio · address · studio time
+ *            (or coordinates once site settings carry them) · contact ·
+ *            sheet/scale/©. Replaces the old giant AA2U logotype.
+ *   Bottom : colophon row (links + credit)
  */
 
 const { t } = useI18n()
@@ -12,27 +13,9 @@ const tt = useT()
 const localePath = useLocalePath()
 const { data: site } = await useSiteSettings()
 
-const email = ref('')
-const submitting = ref(false)
-const submitted = ref(false)
-const errorMsg = ref('')
-
-async function onSubscribe() {
-  if (!email.value.trim()) return
-  errorMsg.value = ''
-  submitting.value = true
-  try {
-    // TODO: wire to actual newsletter provider (Resend / MailerLite) later.
-    // For now, simulate success so the UI flow is testable.
-    await new Promise((r) => setTimeout(r, 450))
-    submitted.value = true
-    email.value = ''
-  } catch (e: any) {
-    errorMsg.value = e?.message || t('footer.newsletter_error')
-  } finally {
-    submitting.value = false
-  }
-}
+// Newsletter signup was removed: there is no provider wired, and the old
+// form faked success while discarding the address. It returns (keys under
+// `footer.newsletter_*` are kept) once Resend / MailerLite is connected.
 
 const navLinks = [
   { key: 'work',    path: '/work' },
@@ -43,85 +26,51 @@ const navLinks = [
 const socials = computed(() => {
   const s = site.value?.socials ?? {}
   return [
-    s.instagram ? { label: 'Instagram', url: s.instagram } : null,
-    s.linkedin  ? { label: 'LinkedIn',  url: s.linkedin  } : null,
-    s.behance   ? { label: 'Behance',   url: s.behance   } : null,
-  ].filter(Boolean) as { label: string; url: string }[]
+    { label: 'Instagram', url: s.instagram },
+    { label: 'LinkedIn',  url: s.linkedin  },
+    { label: 'Behance',   url: s.behance   },
+  ].filter((x): x is { label: string; url: string } => isHttpUrl(x.url))
 })
 
 const currentYear = new Date().getFullYear()
+
+// Studio coordinates are optional in site settings (not in the type yet);
+// until present, the cell shows the live studio time instead.
+const studioCoords = computed(() => {
+  const st = site.value as ({ lat?: number; lng?: number } & Record<string, unknown>) | null
+  return formatDms(st?.lat, st?.lng)
+})
+const time = ref('')
+let timer: ReturnType<typeof setInterval> | null = null
+onMounted(() => {
+  time.value = studioTime()
+  timer = setInterval(() => { time.value = studioTime() }, 30_000)
+})
+onBeforeUnmount(() => { if (timer) clearInterval(timer) })
 </script>
 
 <template>
-  <footer class="site-footer relative bg-[var(--color-bg)] text-white">
+  <footer class="site-footer relative z-[1] text-white">
     <!-- Top section -->
-    <div class="px-6 md:px-10 pt-24 md:pt-32 pb-10 md:pb-16">
+    <div class="sheet-wrap pt-24 md:pt-32 pb-12 md:pb-16">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-        <!-- LEFT: journal signup + meta strip -->
+        <!-- LEFT: contact CTA -->
         <div class="lg:col-span-7">
-          <h2 class="font-display tracking-tight text-2xl md:text-3xl lg:text-4xl max-w-md">
-            {{ t('footer.newsletter_heading') }}
+          <h2 class="font-display display-l max-w-md">
+            <NuxtLink
+              :to="localePath('/contact')"
+              class="footer-cta inline"
+              :data-cursor-label="t('footer.write_us')"
+            >
+              {{ t('footer.lets_build_a') }} {{ t('footer.lets_build_b') }}
+              <span class="footer-cta-arrow inline-block" aria-hidden="true">→</span>
+            </NuxtLink>
           </h2>
-
-          <form class="mt-8 max-w-xl" novalidate @submit.prevent="onSubscribe">
-            <div class="flex items-center gap-3 border-b border-white/25 pb-3 focus-within:border-white/80 transition-colors duration-300">
-              <input
-                v-model="email"
-                type="email"
-                required
-                :placeholder="t('footer.newsletter_placeholder')"
-                :disabled="submitting || submitted"
-                class="flex-1 bg-transparent text-base md:text-lg placeholder:text-white/35 focus:outline-none disabled:opacity-60"
-              />
-              <button
-                type="submit"
-                :disabled="submitting || submitted || !email"
-                class="footer-arrow-btn text-xl shrink-0"
-                :aria-label="t('footer.newsletter_submit')"
-                :data-cursor-label="t('footer.newsletter_submit')"
-              >→</button>
-            </div>
-            <Transition name="meta">
-              <p v-if="submitted" class="mt-3 text-xs uppercase tracking-[0.22em] text-[var(--color-accent,#c0caf5)]">
-                {{ t('footer.newsletter_success') }}
-              </p>
-              <p v-else-if="errorMsg" class="mt-3 text-xs uppercase tracking-[0.22em] text-red-300">
-                {{ errorMsg }}
-              </p>
-            </Transition>
-          </form>
-
-          <!-- Meta strip: 3 columns of contact info -->
-          <div class="mt-14 md:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-10">
-            <div v-if="site?.address">
-              <div class="footer-label">{{ t('footer.head_office') }}</div>
-              <p class="footer-value mt-3">{{ tt(site.address) }}</p>
-            </div>
-            <div v-if="site?.contact_email">
-              <div class="footer-label">{{ t('footer.email_us') }}</div>
-              <a
-                :href="`mailto:${site.contact_email}`"
-                class="footer-link mt-3 inline-block"
-                :data-cursor-label="t('footer.write_us')"
-              >
-                {{ site.contact_email }}
-              </a>
-            </div>
-            <div v-if="site?.contact_phone">
-              <div class="footer-label">{{ t('footer.call_us') }}</div>
-              <a
-                :href="`tel:${site.contact_phone.replace(/\s+/g, '')}`"
-                class="footer-link mt-3 inline-block"
-              >
-                {{ site.contact_phone }}
-              </a>
-            </div>
-          </div>
         </div>
 
         <!-- RIGHT: pages + socials -->
         <div class="lg:col-span-5 grid grid-cols-2 gap-8 md:gap-12 lg:pl-8">
-          <nav>
+          <nav :aria-label="t('footer.nav_label')">
             <ul class="space-y-3 md:space-y-4">
               <li v-for="link in navLinks" :key="link.key">
                 <NuxtLink
@@ -147,38 +96,73 @@ const currentYear = new Date().getFullYear()
           </ul>
         </div>
       </div>
-    </div>
 
-    <!-- Giant logotype — fully visible, viewport-spanning -->
-    <div class="footer-logo-row px-6 md:px-10 pb-6 md:pb-10 select-none" aria-hidden="true">
-      <div class="footer-logo font-display tracking-tight">AA2U</div>
+      <!-- Drawing title block -->
+      <dl class="title-block mt-16 md:mt-24">
+        <div class="tb-cell">
+          <dt class="mono-s text-muted">{{ t('footer.tb_studio') }}</dt>
+          <dd>{{ site?.studio_name || 'AA2U' }}</dd>
+        </div>
+        <div v-if="site?.address" class="tb-cell">
+          <dt class="mono-s text-muted">{{ t('footer.tb_address') }}</dt>
+          <dd>{{ tt(site.address) }}</dd>
+        </div>
+        <div v-if="studioCoords" class="tb-cell">
+          <dt class="mono-s text-muted">{{ t('footer.tb_coord') }}</dt>
+          <dd class="mono-s" :aria-label="studioCoords.spoken">{{ studioCoords.text }}</dd>
+        </div>
+        <div v-else class="tb-cell">
+          <dt class="mono-s text-muted">{{ t('nav.studio_time') }}</dt>
+          <dd class="mono-s">
+            JKT <span class="tabular-nums">{{ time || '--:--' }}</span> WIB
+          </dd>
+        </div>
+        <div v-if="site?.contact_email || site?.contact_phone" class="tb-cell tb-cell--wide">
+          <dt class="mono-s text-muted">{{ t('footer.tb_contact') }}</dt>
+          <dd class="flex flex-col gap-1">
+            <a
+              v-if="site?.contact_email"
+              :href="`mailto:${site.contact_email}`"
+              class="footer-link"
+            >{{ site.contact_email }}</a>
+            <a
+              v-if="site?.contact_phone"
+              :href="`tel:${site.contact_phone.replace(/\s+/g, '')}`"
+              class="footer-link"
+            >{{ site.contact_phone }}</a>
+          </dd>
+        </div>
+        <div class="tb-cell">
+          <dt class="mono-s text-muted">{{ t('footer.tb_sheet') }}</dt>
+          <dd class="mono-s">A-000 · {{ t('footer.tb_scale') }} · &copy; {{ currentYear }}</dd>
+        </div>
+      </dl>
     </div>
 
     <!-- Colophon -->
-    <div class="px-6 md:px-10 py-5 md:py-6 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-3 text-[11px] uppercase tracking-[0.22em] text-white/55">
-      <ul class="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <li>
-          <NuxtLink :to="localePath('/work')" class="footer-colophon-link">
-            {{ t('nav.work') }}
-          </NuxtLink>
-        </li>
-        <li>
-          <NuxtLink :to="localePath('/about')" class="footer-colophon-link">
-            {{ t('nav.about') }}
-          </NuxtLink>
-        </li>
-        <li>
-          <NuxtLink :to="localePath('/contact')" class="footer-colophon-link">
-            {{ t('nav.contact') }}
-          </NuxtLink>
-        </li>
-        <li>
-          <a href="/sitemap.xml" class="footer-colophon-link">{{ t('footer.sitemap') }}</a>
-        </li>
-      </ul>
-      <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <span>&copy; {{ currentYear }} {{ site?.studio_name || 'AA2U' }}</span>
-        <span class="text-white/35">{{ t('footer.built_with') }}</span>
+    <div class="border-t border-line">
+      <div class="sheet-wrap py-5 md:py-6 flex flex-col md:flex-row md:items-center justify-between gap-3 mono-s text-fg-2">
+        <ul class="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <li>
+            <NuxtLink :to="localePath('/work')" class="footer-colophon-link">
+              {{ t('nav.work') }}
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink :to="localePath('/about')" class="footer-colophon-link">
+              {{ t('nav.about') }}
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink :to="localePath('/contact')" class="footer-colophon-link">
+              {{ t('nav.contact') }}
+            </NuxtLink>
+          </li>
+          <li>
+            <a href="/sitemap.xml" class="footer-colophon-link">{{ t('footer.sitemap') }}</a>
+          </li>
+        </ul>
+        <span class="text-muted">{{ t('footer.built_with') }}</span>
       </div>
     </div>
   </footer>
@@ -187,24 +171,40 @@ const currentYear = new Date().getFullYear()
 <style scoped>
 .site-footer { margin-top: 8rem; }
 
-.footer-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.28em;
-  color: rgba(255, 255, 255, 0.4);
+/* Title block: a grid of cells with hairline borders, like the corner of a
+   drawing sheet. The 1px gaps over a line-coloured ground draw the rules,
+   so they stay right whatever cells are present; cells are opaque so the
+   sheet grid doesn't run through them. 5 across ≥1024, 2 columns below
+   (contact gets a full row there so long emails don't break). */
+.title-block {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1.5fr 2fr 2fr;
+  grid-auto-flow: row dense;
+  gap: 1px;
+  padding: 1px;
+  background: var(--color-line-strong);
 }
-.footer-value {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.95rem;
-  line-height: 1.55;
+.tb-cell {
+  min-width: 0;
+  padding: 1rem;
+  background: var(--color-bg);
+}
+.tb-cell dd {
+  margin-top: .375rem;
+  font-size: .875rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.tb-cell dd.mono-s { font-size: .75rem; }
+@media (max-width: 1023px) {
+  .title-block { grid-template-columns: 1fr 1fr; }
+  .tb-cell--wide { grid-column: 1 / -1; }
 }
 
 .footer-link {
   position: relative;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
-  line-height: 1.4;
-  transition: color 0.25s ease;
+  color: var(--color-fg);
+  transition: color var(--d-1) var(--ease-draft);
 }
 .footer-link::after {
   content: '';
@@ -216,9 +216,8 @@ const currentYear = new Date().getFullYear()
   background: currentColor;
   transform: scaleX(0);
   transform-origin: right center;
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--d-3) var(--ease-draft);
 }
-.footer-link:hover { color: #fff; }
 .footer-link:hover::after {
   transform: scaleX(1);
   transform-origin: left center;
@@ -232,7 +231,7 @@ const currentYear = new Date().getFullYear()
   letter-spacing: -0.01em;
   line-height: 1.15;
   color: #fff;
-  transition: color 0.25s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: color var(--d-2) var(--ease-draft);
 }
 .footer-nav-link::after {
   content: '';
@@ -244,49 +243,30 @@ const currentYear = new Date().getFullYear()
   background: currentColor;
   transform: scaleX(0);
   transform-origin: right center;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--d-3) var(--ease-draft);
 }
 .footer-nav-link:hover {
-  color: var(--color-accent, #c0caf5);
+  color: var(--color-accent);
 }
 .footer-nav-link:hover::after {
   transform: scaleX(1);
   transform-origin: left center;
 }
 
-.footer-arrow-btn {
-  color: rgba(255, 255, 255, 0.7);
-  transition: color 0.25s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.footer-arrow-btn:not(:disabled):hover {
+.footer-cta {
   color: #fff;
-  transform: translateX(4px);
+  transition: color var(--d-2) var(--ease-draft);
 }
-.footer-arrow-btn:disabled {
-  cursor: not-allowed;
+.footer-cta:hover { color: var(--color-accent); }
+.footer-cta-arrow {
+  transition: transform var(--d-3) var(--ease-draft);
 }
-
-.footer-logo-row {
-  margin-top: 2rem;
-}
-.footer-logo {
-  /* Fully visible, viewport-spanning. Tight letter-spacing fills width. */
-  font-size: clamp(5rem, 28vw, 22rem);
-  line-height: 0.9;
-  letter-spacing: -0.045em;
-  color: #fff;
-  white-space: nowrap;
-  text-align: left;
-}
-@media (min-width: 768px) {
-  .footer-logo-row { margin-top: 3rem; }
-  .footer-logo { letter-spacing: -0.055em; }
-}
+.footer-cta:hover .footer-cta-arrow { transform: translateX(6px); }
 
 .footer-colophon-link {
   position: relative;
   color: inherit;
-  transition: color 0.25s ease;
+  transition: color var(--d-1) var(--ease-draft);
 }
 .footer-colophon-link::after {
   content: '';
@@ -298,18 +278,11 @@ const currentYear = new Date().getFullYear()
   background: currentColor;
   transform: scaleX(0);
   transform-origin: right center;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--d-3) var(--ease-draft);
 }
 .footer-colophon-link:hover { color: #fff; }
 .footer-colophon-link:hover::after {
   transform: scaleX(1);
   transform-origin: left center;
 }
-
-.meta-enter-active,
-.meta-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.meta-enter-from { opacity: 0; transform: translateY(6px); }
-.meta-leave-to   { opacity: 0; transform: translateY(-6px); }
 </style>

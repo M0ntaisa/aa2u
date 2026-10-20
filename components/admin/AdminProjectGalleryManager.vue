@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { I18nField } from '~/types/content'
+import type { Chapter, I18nField, ImageLayout } from '~/types/content'
+import { CHAPTERS, IMAGE_LAYOUTS } from '~/utils/project-mapper'
 
 const props = defineProps<{
   projectId: string | null
@@ -12,6 +13,12 @@ interface GalleryItem {
   alt: I18nField
   caption: I18nField
   sort_order: number
+  chapter: Chapter
+  layout: ImageLayout
+  width: number | null
+  height: number | null
+  focal_x: number | null
+  focal_y: number | null
   _saving?: boolean
   _error?: string
 }
@@ -28,12 +35,65 @@ const newImageUrl = ref('')
 
 const blankI18n = (): I18nField => ({ id: '', en: '' })
 
+const SELECT = 'id, url, alt, caption, sort_order, chapter, layout, width, height, focal_x, focal_y'
+
+const chapterLabels: Record<Chapter, string> = {
+  site: '01 Tapak', concept: '02 Konsep', plan: '03 Denah',
+  section: '04 Potongan', material: '05 Material', built: '06 Terbangun',
+}
+const layoutLabels: Record<ImageLayout, string> = {
+  auto: 'Otomatis', full: 'Full (selebar layar)', wide: 'Wide', inset: 'Inset', pair: 'Pair (berpasangan)', tall: 'Tall (portrait)',
+}
+
+const toItem = (d: any): GalleryItem => ({
+  id: d.id,
+  url: d.url,
+  alt: d.alt ?? blankI18n(),
+  caption: d.caption ?? blankI18n(),
+  sort_order: d.sort_order,
+  chapter: d.chapter ?? 'built',
+  layout: d.layout ?? 'auto',
+  width: d.width ?? null,
+  height: d.height ?? null,
+  focal_x: d.focal_x ?? null,
+  focal_y: d.focal_y ?? null,
+})
+
+/** Intrinsic size, read once on upload (needed for auto layout + CLS). */
+function readImageSize(url: string): Promise<{ width: number; height: number } | null> {
+  if (!import.meta.client) return Promise.resolve(null)
+  return new Promise((resolve) => {
+    const el = new Image()
+    el.onload = () => resolve(el.naturalWidth ? { width: el.naturalWidth, height: el.naturalHeight } : null)
+    el.onerror = () => resolve(null)
+    el.src = url
+  })
+}
+
+/** Backfill size for older rows the first time their thumbnail loads. */
+function onThumbLoad(item: GalleryItem, e: Event) {
+  if (item.width && item.height) return
+  const el = e.target as HTMLImageElement
+  if (el.naturalWidth) {
+    item.width = el.naturalWidth
+    item.height = el.naturalHeight
+  }
+}
+
+/** Click on the thumbnail sets the crop focal point (0–1). */
+function setFocal(item: GalleryItem, e: MouseEvent) {
+  const box = (e.currentTarget as HTMLElement).getBoundingClientRect()
+  const clamp = (v: number) => Math.min(1, Math.max(0, Math.round(v * 100) / 100))
+  item.focal_x = clamp((e.clientX - box.left) / box.width)
+  item.focal_y = clamp((e.clientY - box.top) / box.height)
+}
+
 async function load() {
   if (!props.projectId || isPlaceholder) return
   status.value = 'loading'
   const { data, error } = await supabase
     .from('project_images')
-    .select('id, url, alt, caption, sort_order')
+    .select(SELECT)
     .eq('project_id', props.projectId)
     .order('sort_order', { ascending: true })
 
@@ -43,13 +103,7 @@ async function load() {
     return
   }
 
-  items.value = (data ?? []).map((d: any) => ({
-    id: d.id,
-    url: d.url,
-    alt: d.alt ?? blankI18n(),
-    caption: d.caption ?? blankI18n(),
-    sort_order: d.sort_order,
-  }))
+  items.value = (data ?? []).map(toItem)
   status.value = 'idle'
 }
 
@@ -63,6 +117,7 @@ async function onUploaded(url: string) {
   const nextOrder = items.value.length
     ? Math.max(...items.value.map(i => i.sort_order)) + 1
     : 0
+  const size = await readImageSize(url)
   const { data, error } = await supabase
     .from('project_images')
     .insert({
@@ -71,8 +126,10 @@ async function onUploaded(url: string) {
       alt: blankI18n(),
       caption: blankI18n(),
       sort_order: nextOrder,
+      width: size?.width ?? null,
+      height: size?.height ?? null,
     })
-    .select('id, url, alt, caption, sort_order')
+    .select(SELECT)
     .maybeSingle()
 
   if (error) {
@@ -82,13 +139,7 @@ async function onUploaded(url: string) {
   }
 
   if (data) {
-    items.value.push({
-      id: data.id,
-      url: data.url,
-      alt: data.alt ?? blankI18n(),
-      caption: data.caption ?? blankI18n(),
-      sort_order: data.sort_order,
-    })
+    items.value.push(toItem(data))
     toast.success('Gambar ditambahkan', 'Isi alt text sebelum publish.')
   }
   newImageUrl.value = ''
@@ -103,7 +154,16 @@ async function saveItem(item: GalleryItem) {
   item._error = ''
   const { error } = await supabase
     .from('project_images')
-    .update({ alt: item.alt, caption: item.caption })
+    .update({
+      alt: item.alt,
+      caption: item.caption,
+      chapter: item.chapter,
+      layout: item.layout,
+      width: item.width,
+      height: item.height,
+      focal_x: item.focal_x,
+      focal_y: item.focal_y,
+    })
     .eq('id', item.id)
   item._saving = false
   if (error) {
@@ -111,7 +171,7 @@ async function saveItem(item: GalleryItem) {
     toast.error('Gagal menyimpan', error.message)
     return
   }
-  toast.success('Teks gambar tersimpan')
+  toast.success('Detail gambar tersimpan')
 }
 
 async function removeItem(item: GalleryItem) {
@@ -136,52 +196,8 @@ async function removeItem(item: GalleryItem) {
   toast.success('Gambar dihapus')
 }
 
-// Drag-and-drop reorder
-const dragIndex = ref<number | null>(null)
-const dropIndex = ref<number | null>(null)
-
-function onDragStart(i: number) { dragIndex.value = i }
-function onDragOver(e: DragEvent, i: number) {
-  e.preventDefault()
-  dropIndex.value = i
-}
-function onDragEnd() {
-  dragIndex.value = null
-  dropIndex.value = null
-}
-
-async function onDrop(targetIndex: number) {
-  const from = dragIndex.value
-  onDragEnd()
-  if (from === null || from === targetIndex) return
-
-  const reordered = [...items.value]
-  const [moved] = reordered.splice(from, 1)
-  reordered.splice(targetIndex, 0, moved)
-  reordered.forEach((it, idx) => { it.sort_order = idx })
-  items.value = reordered
-
-  // Persist new sort_order for all affected items
-  const updates = reordered.map(it =>
-    supabase.from('project_images').update({ sort_order: it.sort_order }).eq('id', it.id),
-  )
-  const results = await Promise.all(updates)
-  const firstError = results.find(r => r.error)
-  if (firstError?.error) {
-    errorMessage.value = firstError.error.message
-    toast.error('Urutan gagal disimpan', firstError.error.message)
-    return
-  }
-  toast.success('Urutan gallery diperbarui')
-}
-
-/** Keyboard reorder — drag-and-drop alone is not accessible. */
-async function move(index: number, delta: number) {
-  const target = index + delta
-  if (target < 0 || target >= items.value.length) return
-  dragIndex.value = index
-  await onDrop(target)
-}
+const { dragIndex, dropIndex, busy: reordering, onDragStart, onDragOver, onDragEnd, onDrop, move } =
+  useProjectMediaReorder(items, 'project_images', 'Urutan gallery diperbarui')
 </script>
 
 <template>
@@ -232,16 +248,36 @@ async function move(index: number, delta: number) {
               ? 'border-[var(--ad-accent)] bg-[rgba(122,162,247,0.06)]'
               : 'border-[var(--ad-border)] bg-[var(--ad-surface-sunk)]',
           ]"
-          draggable="true"
+          :draggable="!reordering"
           @dragstart="onDragStart(i)"
           @dragover="onDragOver($event, i)"
           @dragend="onDragEnd"
           @drop.prevent="onDrop(i)"
         >
           <div class="space-y-2">
-            <div class="aspect-[4/3] cursor-move overflow-hidden rounded bg-[var(--ad-surface-hover)]">
-              <img :src="item.url" :alt="item.alt.id" class="h-full w-full object-cover" loading="lazy" />
+            <div
+              class="relative aspect-[4/3] cursor-crosshair overflow-hidden rounded bg-[var(--ad-surface-hover)]"
+              title="Klik untuk mengatur titik fokus crop"
+              @click="setFocal(item, $event)"
+            >
+              <img
+                :src="item.url"
+                :alt="item.alt.id"
+                class="h-full w-full object-cover"
+                :style="{ objectPosition: `${(item.focal_x ?? 0.5) * 100}% ${(item.focal_y ?? 0.5) * 100}%` }"
+                loading="lazy"
+                @load="onThumbLoad(item, $event)"
+              />
+              <span
+                v-if="item.focal_x !== null && item.focal_y !== null"
+                class="pointer-events-none absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow"
+                :style="{ left: `${item.focal_x * 100}%`, top: `${item.focal_y * 100}%` }"
+              />
             </div>
+            <p class="text-[11px] text-[var(--ad-fg-subtle)]">
+              {{ item.width && item.height ? `${item.width}×${item.height}px` : 'ukuran belum terbaca' }}
+              · fokus {{ item.focal_x ?? 0.5 }}, {{ item.focal_y ?? 0.5 }}
+            </p>
 
             <div class="flex items-center gap-1">
               <span class="ad-eyebrow flex items-center gap-1">
@@ -255,7 +291,7 @@ async function move(index: number, delta: number) {
                   icon-only
                   icon="chevronUp"
                   label="Naikkan urutan"
-                  :disabled="i === 0"
+                  :disabled="reordering || i === 0"
                   @click="move(i, -1)"
                 />
                 <AdminButton
@@ -264,7 +300,7 @@ async function move(index: number, delta: number) {
                   icon-only
                   icon="chevronDown"
                   label="Turunkan urutan"
-                  :disabled="i === items.length - 1"
+                  :disabled="reordering || i === items.length - 1"
                   @click="move(i, 1)"
                 />
               </div>
@@ -291,6 +327,19 @@ async function move(index: number, delta: number) {
               placeholder="Opsional"
             />
 
+            <div class="grid gap-4 md:grid-cols-2">
+              <AdminField label="Bab" hint="Bagian dossier tempat gambar tampil.">
+                <select v-model="item.chapter" class="ad-select">
+                  <option v-for="c in CHAPTERS" :key="c" :value="c">{{ chapterLabels[c] }}</option>
+                </select>
+              </AdminField>
+              <AdminField label="Layout" hint="Otomatis: lebar/portrait/pasangan dipilih dari ukuran gambar.">
+                <select v-model="item.layout" class="ad-select">
+                  <option v-for="l in IMAGE_LAYOUTS" :key="l" :value="l">{{ layoutLabels[l] }}</option>
+                </select>
+              </AdminField>
+            </div>
+
             <div class="flex flex-wrap items-center gap-2.5">
               <AdminButton
                 variant="secondary"
@@ -299,7 +348,7 @@ async function move(index: number, delta: number) {
                 :loading="item._saving"
                 @click="saveItem(item)"
               >
-                Simpan teks
+                Simpan
               </AdminButton>
               <AdminButton variant="danger" size="sm" icon="trash" @click="removeItem(item)">Hapus</AdminButton>
               <p v-if="item._error" class="ad-error-text">{{ item._error }}</p>

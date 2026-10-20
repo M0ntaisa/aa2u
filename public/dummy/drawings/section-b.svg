@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="square">
+  <!-- Placeholder section: cantilever over slope -->
+  <path d="M60 520c240 0 420 -80 600 -200s300 -120 480 -120" stroke-width="4"/>
+  <path d="M260 440v-220h620v120h-260v100" stroke-width="5"/>
+  <path d="M260 220h620M260 330h360" stroke-width="2"/>
+  <path d="M220 220l340 -80 360 80" stroke-width="3"/>
+  <path d="M920 140v300M910 140h20M910 440h20" stroke-width="1"/>
+</svg>

@@ -43,8 +43,9 @@
   --ad-shadow-pop:    0 16px 48px -12px rgba(0, 0, 0, 0.7);
 }
 
-/* The admin area uses the OS cursor — the site-wide CustomCursor hides it,
-   which is fine for a portfolio but hostile in a data-entry UI. */
+/* The admin area always uses the OS cursor. The site's CrosshairCursor is
+   not mounted on admin routes; this guard keeps any site cursor styling
+   from leaking into a data-entry UI. */
 html.admin-area,
 html.admin-area * {
   cursor: revert !important;

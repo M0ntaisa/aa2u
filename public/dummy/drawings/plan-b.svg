@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="square">
+  <!-- Placeholder plan with courtyard -->
+  <rect x="160" y="120" width="880" height="560" stroke-width="6"/>
+  <rect x="460" y="300" width="280" height="200" stroke-width="4"/>
+  <path d="M160 300h300M740 300h300M160 500h300M740 500h300M600 120v180M600 500v180"/>
+  <path d="M470 310l260 180M730 310l-260 180" stroke-width="1" opacity=".5"/>
+  <path d="M300 300a60 60 0 0 1 60 -60" stroke-width="1"/>
+  <path d="M120 120v560M110 120h20M110 680h20" stroke-width="1"/>
+</svg>

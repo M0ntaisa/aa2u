@@ -32,6 +32,9 @@ export default defineNuxtConfig({
       { name: 'General Sans', provider: 'fontshare', weights: [400, 500, 600, 700] },
       // Neutral, highly legible body face
       { name: 'Inter', provider: 'google', weights: [400, 500, 600] },
+      // Technical mono for every piece of metadata (coordinates, years,
+      // sheet numbers) — reads like title-block and dimension text.
+      { name: 'IBM Plex Mono', provider: 'google', weights: [400, 500] },
     ],
     defaults: {
       preload: true,
@@ -89,6 +92,10 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Header carrying the real client IP, set by *your own* reverse proxy
+    // (e.g. "cf-connecting-ip", "x-real-ip"). Empty = use the socket IP.
+    // Override at runtime with NUXT_TRUSTED_IP_HEADER.
+    trustedIpHeader: '',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     },

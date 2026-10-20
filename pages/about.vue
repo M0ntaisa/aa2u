@@ -14,7 +14,7 @@ useSiteSeo({
 const config = useRuntimeConfig()
 const siteUrl = (config.public as any).siteUrl as string
 
-const organizationJsonLd = computed(() => JSON.stringify({
+const organizationJsonLd = computed(() => jsonLd({
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: site.value?.studio_name ?? 'AA2U',
@@ -26,7 +26,7 @@ const organizationJsonLd = computed(() => JSON.stringify({
     site.value?.socials?.instagram,
     site.value?.socials?.linkedin,
     site.value?.socials?.behance,
-  ].filter(Boolean),
+  ].filter(isHttpUrl),
   description: tt(site.value?.manifesto),
 }))
 
@@ -38,12 +38,10 @@ useHead({
 </script>
 
 <template>
-  <div class="px-6 pt-32 pb-24">
+  <div class="sheet-wrap pt-32 pb-24">
     <header class="mb-20 md:mb-28">
-      <span class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)]">
-        {{ t('about.eyebrow') }}
-      </span>
-      <h1 class="mt-4 font-display text-5xl md:text-8xl tracking-tight leading-[0.95] max-w-4xl">
+      <SheetRuler sheet="A-03" :label="t('about.eyebrow')" class="mb-6" />
+      <h1 v-reveal="{ lines: true }" class="font-display text-5xl md:text-8xl tracking-tight leading-[0.95] max-w-4xl">
         {{ t('about.heading') }}
       </h1>
     </header>
@@ -56,8 +54,8 @@ useHead({
     </div>
 
     <!-- Studio principles -->
-    <section v-if="principles?.length" class="py-16 md:py-24 border-t border-white/10">
-      <span v-reveal class="block text-xs uppercase tracking-[0.25em] text-[var(--color-muted)]">
+    <section v-if="principles?.length" class="py-16 md:py-24 border-t border-line">
+      <span class="block mono-s text-muted">
         N°003 — {{ t('about.principles_label') }}
       </span>
       <div
@@ -67,15 +65,15 @@ useHead({
         <div
           v-for="(p, i) in principles"
           :key="i"
-          class="border-t border-white/10 pt-4"
+          class="border-t border-line pt-4"
         >
-          <span class="text-xs text-[var(--color-muted)] tracking-[0.25em]">
+          <span class="mono-s text-muted">
             N°{{ String(i + 1).padStart(2, '0') }}
           </span>
           <h3 class="mt-3 font-display text-3xl md:text-4xl tracking-tight">
             {{ tt(p.title) }}
           </h3>
-          <p v-if="p.description" class="mt-3 text-sm text-[var(--color-muted)] leading-relaxed">
+          <p v-if="p.description" class="mt-3 text-sm text-fg-2 leading-relaxed">
             {{ tt(p.description) }}
           </p>
         </div>
@@ -83,9 +81,9 @@ useHead({
     </section>
 
     <!-- Team -->
-    <section v-if="team?.length" class="py-16 md:py-24 border-t border-white/10">
+    <section v-if="team?.length" class="py-16 md:py-24 border-t border-line">
       <div v-reveal>
-        <span class="block text-xs uppercase tracking-[0.25em] text-[var(--color-muted)]">
+        <span class="block mono-s text-muted">
           N°004 — {{ t('about.team_label') }}
         </span>
         <h2 class="mt-4 font-display text-4xl md:text-6xl tracking-tight leading-[1] mb-12">
