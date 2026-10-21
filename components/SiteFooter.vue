@@ -158,9 +158,6 @@ onBeforeUnmount(() => { if (timer) clearInterval(timer) })
               {{ t('nav.contact') }}
             </NuxtLink>
           </li>
-          <li>
-            <a href="/sitemap.xml" class="footer-colophon-link">{{ t('footer.sitemap') }}</a>
-          </li>
         </ul>
         <span class="text-muted">{{ t('footer.built_with') }}</span>
       </div>

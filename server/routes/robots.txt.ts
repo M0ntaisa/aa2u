@@ -9,6 +9,8 @@ export default defineEventHandler((event) => {
 Allow: /
 Disallow: /admin
 Disallow: /admin/
+Disallow: /en/admin
+Disallow: /en/admin/
 Disallow: /api/
 
 Sitemap: ${siteUrl}/sitemap.xml
